@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "Framework Frontend",
+    "version": "1.0.0",
+    "environment": "development",
+    "debug": true
+  },
+  "api": {
+    "baseUrl": "https://api.example.com",
+    "timeout": 30000,
+    "retryAttempts": 3
+  },
+  "routes": {
+    "defaultPage": "home",
+    "404Page": "404",
+    "validPages": [
+      "home",
+      "about",
+      "contact",
+      "privacy",
+      "terms",
+      "404"
+    ]
+  },
+  "components": {
+    "path": "src/components",
+    "defaultSkeleton": true,
+    "skeletonDelay": 400
+  },
+  "assets": {
+    "images": "/assets/images",
+    "css": "/assets/css",
+    "js": "/assets/js"
+  },
+  "analytics": {
+    "enabled": false,
+    "trackingId": "UA-XXXXXXXXX-X"
+  },
+  "cache": {
+    "enabled": true,
+    "duration": 3600
+  },
+  "security": {
+    "cors": {
+      "enabled": true,
+      "allowedOrigins": ["*"]
+    },
+    "headers": {
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff"
+    }
+  },
+  "performance": {
+    "lazyLoad": true,
+    "preload": true,
+    "minify": false
+  },
+  "theme": {
+    "primary": "#007bff",
+    "secondary": "#6c757d",
+    "success": "#28a745",
+    "danger": "#dc3545",
+    "warning": "#ffc107",
+    "info": "#17a2b8"
+  }
+} 

@@ -15,8 +15,7 @@ class Core {
     this._currentPath = null;
     // Inicialização única
     this._globalComponentsLoaded = false;
-    // Lista de páginas válidas
-    this.validPages = ['home', 'about', 'contact', 'privacy', 'terms', '404'];
+    
     this.init();
   }
 
