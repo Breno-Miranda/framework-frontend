@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema de Debug - MSoft Framework</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .debug-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .console-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste do Sistema de Debug</h1>
+    
+    <div class="debug-info">
+        <strong>Status do Debug:</strong> <span id="debug-status">Verificando...</span><br>
+        <strong>URL Atual:</strong> <span id="current-url"></span><br>
+        <strong>Para habilitar debug:</strong> Adicione <code>?debug=true</code> à URL
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Controles de Debug</h2>
+        <button class="button" onclick="testLog()">Testar Log</button>
+        <button class="button" onclick="testWarn()">Testar Warning</button>
+        <button class="button" onclick="testInfo()">Testar Info</button>
+        <button class="button success" onclick="enableDebug()">Habilitar Debug</button>
+        <button class="button warning" onclick="disableDebug()">Desabilitar Debug</button>
+        <button class="button" onclick="clearConsole()">Limpar Console</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Testes Automáticos</h2>
+        <button class="button" onclick="runAllTests()">Executar Todos os Testes</button>
+        <button class="button" onclick="testAPI()">Simular API Call</button>
+        <button class="button" onclick="testPerformance()">Testar Performance</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Console Output</h2>
+        <div id="console-output" class="console-output">Aguardando logs...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>📖 Instruções</h2>
+        <ol>
+            <li><strong>Debug Desabilitado:</strong> Nenhum log aparecerá no console (padrão)</li>
+            <li><strong>Debug Habilitado:</strong> Adicione <code>?debug=true</code> à URL</li>
+            <li><strong>Teste os botões:</strong> Clique nos botões para ver os logs</li>
+            <li><strong>Verifique o console:</strong> Abra as ferramentas do desenvolvedor (F12)</li>
+        </ol>
+    </div>
+
+    <!-- Sistema de Debug (deve ser carregado primeiro) -->
+    <script src="src/utils/debug.js"></script>
+
+    <script>
+        // Função para capturar logs do console
+        let consoleOutput = '';
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalInfo = console.info;
+
+        function captureConsole(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            consoleOutput += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            document.getElementById('console-output').textContent = consoleOutput;
+        }
+
+        // Substitui console methods para capturar output
+        console.log = function(...args) {
+            captureConsole('log', ...args);
+            originalLog.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+            captureConsole('warn', ...args);
+            originalWarn.apply(console, args);
+        };
+
+        console.info = function(...args) {
+            captureConsole('info', ...args);
+            originalInfo.apply(console, args);
+        };
+
+        // Atualiza status do debug
+        function updateDebugStatus() {
+            const isEnabled = window.Debug?.isEnabled() || false;
+            const statusElement = document.getElementById('debug-status');
+            const urlElement = document.getElementById('current-url');
+            
+            statusElement.textContent = isEnabled ? '✅ Habilitado' : '❌ Desabilitado';
+            statusElement.style.color = isEnabled ? 'green' : 'red';
+            
+            urlElement.textContent = window.location.href;
+        }
+
+        // Teste de log
+        function testLog() {
+            window.Debug?.log('Teste de log - dados da aplicação', {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                debugEnabled: window.Debug?.isEnabled()
+            });
+        }
+
+        // Teste de warning
+        function testWarn() {
+            window.Debug?.warn('Teste de warning - atenção necessária', {
+                warning: 'Esta é uma mensagem de aviso',
+                level: 'medium'
+            });
+        }
+
+        // Teste de info
+        function testInfo() {
+            window.Debug?.info('Teste de info - informação útil', {
+                info: 'Esta é uma informação útil',
+                category: 'test'
+            });
+        }
+
+        // Habilitar debug
+        function enableDebug() {
+            window.Debug?.addDebugToUrl();
+            updateDebugStatus();
+            window.Debug?.log('Debug habilitado via botão');
+        }
+
+        // Desabilitar debug
+        function disableDebug() {
+            window.Debug?.removeDebugFromUrl();
+            updateDebugStatus();
+            window.Debug?.log('Debug desabilitado via botão');
+        }
+
+        // Limpar console
+        function clearConsole() {
+            consoleOutput = '';
+            document.getElementById('console-output').textContent = 'Console limpo...';
+        }
+
+        // Executar todos os testes
+        function runAllTests() {
+            window.Debug?.log('=== Iniciando bateria de testes ===');
+            
+            // Teste 1: Log simples
+            window.Debug?.log('Teste 1: Log simples');
+            
+            // Teste 2: Log com dados
+            window.Debug?.log('Teste 2: Log com dados', {
+                test: true,
+                number: 42,
+                string: 'hello world'
+            });
+            
+            // Teste 3: Warning
+            window.Debug?.warn('Teste 3: Warning de teste');
+            
+            // Teste 4: Info
+            window.Debug?.info('Teste 4: Informação de teste');
+            
+            // Teste 5: Verificação de status
+            window.Debug?.log('Teste 5: Status do debug', {
+                isEnabled: window.Debug?.isEnabled(),
+                url: window.location.href
+            });
+            
+            window.Debug?.log('=== Bateria de testes concluída ===');
+        }
+
+        // Simular API call
+        function testAPI() {
+            window.Debug?.log('Simulando chamada de API...');
+            
+            // Simula delay de API
+            setTimeout(() => {
+                const mockResponse = {
+                    success: true,
+                    data: {
+                        users: [
+                            { id: 1, name: 'João' },
+                            { id: 2, name: 'Maria' }
+                        ],
+                        total: 2
+                    }
+                };
+                
+                window.Debug?.log('Resposta da API simulada:', mockResponse);
+            }, 1000);
+        }
+
+        // Teste de performance
+        function testPerformance() {
+            window.Debug?.log('Iniciando teste de performance...');
+            
+            const startTime = performance.now();
+            
+            // Simula operação pesada
+            let result = 0;
+            for (let i = 0; i < 1000000; i++) {
+                result += Math.random();
+            }
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            window.Debug?.log('Teste de performance concluído', {
+                duration: `${duration.toFixed(2)}ms`,
+                result: result.toFixed(2),
+                operations: 1000000
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugStatus();
+            
+            // Log inicial
+            window.Debug?.log('Página de teste carregada', {
+                url: window.location.href,
+                debugEnabled: window.Debug?.isEnabled(),
+                timestamp: new Date().toISOString()
+            });
+            
+            // Atualiza status a cada 2 segundos
+            setInterval(updateDebugStatus, 2000);
+        });
+    </script>
+</body>
+</html> 

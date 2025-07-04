@@ -1,0 +1,193 @@
+<!DOCTYPE html><html lang=pt-BR><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>Teste de Subpasta - MSoft Framework</title><style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style></head><body><div class=test-container><h1>🧪 Teste de Roteamento em Subpasta</h1><p>Este arquivo testa se o sistema de roteamento funciona corretamente quando o site está em uma subpasta.</p><div id=test-results></div><div class=test-container><h3>Testes Disponíveis</h3><button onclick=testBasePath()>Testar Detecção de Base Path</button><button onclick=testPathResolution()>Testar Resolução de Caminhos</button><button onclick=testRouter()>Testar Roteamento</button><button onclick=runAllTests()>Executar Todos os Testes</button></div><div class=test-container><h3>Informações do Ambiente</h3><div id=environment-info></div></div></div><script>
+        // Simula o objeto Helpers para teste
+        const TestHelpers = {
+            getBasePath() {
+                const pathname = window.location.pathname;
+                const segments = pathname.split('/').filter(segment => segment !== '');
+                
+                if (segments.length === 0) {
+                    return '';
+                }
+                
+                const lastSegment = segments[segments.length - 1];
+                if (lastSegment && lastSegment.includes('.')) {
+                    segments.pop();
+                }
+                
+                if (segments.length > 0) {
+                    return `/${segments.join('/')}`;
+                }
+                
+                return '';
+            },
+            
+            resolvePath(path) {
+                if (!path || typeof path !== 'string') {
+                    return '';
+                }
+                
+                const basePath = this.getBasePath();
+                
+                if (path.startsWith('/')) {
+                    return `${basePath}${path}`;
+                }
+                
+                return `${basePath}/${path}`;
+            }
+        };
+
+        function addTestResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.innerHTML = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        function testBasePath() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Detecção de Base Path</strong>', 'info');
+            
+            const basePath = TestHelpers.getBasePath();
+            const currentPath = window.location.pathname;
+            
+            addTestResult(`<strong>Path atual:</strong> ${currentPath}`, 'info');
+            addTestResult(`<strong>Base Path detectado:</strong> ${basePath || '(raiz)'}`, 'info');
+            
+            if (basePath === '') {
+                addTestResult('✅ Site está na raiz do servidor', 'success');
+            } else {
+                addTestResult(`✅ Site detectado em subpasta: ${basePath}`, 'success');
+            }
+        }
+
+        function testPathResolution() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Resolução de Caminhos</strong>', 'info');
+            
+            const testPaths = [
+                'src/pages/home.html',
+                'src/components/header.html',
+                'assets/css/style.css',
+                '/src/pages/about.html',
+                'assets/vendor/css/bootstrap.min.css'
+            ];
+            
+            testPaths.forEach(path => {
+                const resolved = TestHelpers.resolvePath(path);
+                addTestResult(`<strong>${path}</strong> → <code>${resolved}</code>`, 'info');
+            });
+        }
+
+        function testRouter() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Roteamento</strong>', 'info');
+            
+            const basePath = TestHelpers.getBasePath();
+            const testRoutes = ['home', 'about', 'contact', 'docs'];
+            
+            testRoutes.forEach(route => {
+                const pagePath = TestHelpers.resolvePath(`src/pages/${route}.html`);
+                addTestResult(`<strong>Rota:</strong> ${route} → <code>${pagePath}</code>`, 'info');
+            });
+            
+            // Testa navegação
+            addTestResult('<br><strong>Teste de Navegação:</strong>', 'info');
+            const testNavigation = [
+                { from: '/', to: '/about' },
+                { from: '/subfolder/', to: '/subfolder/about' },
+                { from: '/subfolder/index.html', to: '/subfolder/about' }
+            ];
+            
+            testNavigation.forEach(nav => {
+                const resolved = TestHelpers.resolvePath('src/pages/about.html');
+                addTestResult(`<strong>${nav.from}</strong> → <strong>${nav.to}</strong> (resolve: <code>${resolved}</code>)`, 'info');
+            });
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('<strong>🚀 Executando Todos os Testes</strong>', 'info');
+            
+            setTimeout(() => testBasePath(), 100);
+            setTimeout(() => testPathResolution(), 200);
+            setTimeout(() => testRouter(), 300);
+        }
+
+        function showEnvironmentInfo() {
+            const envDiv = document.getElementById('environment-info');
+            envDiv.innerHTML = `
+                <p><strong>URL atual:</strong> ${window.location.href}</p>
+                <p><strong>Pathname:</strong> ${window.location.pathname}</p>
+                <p><strong>Origin:</strong> ${window.location.origin}</p>
+                <p><strong>Base Path:</strong> ${TestHelpers.getBasePath() || '(raiz)'}</p>
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+            `;
+        }
+
+        // Inicializa informações do ambiente
+        showEnvironmentInfo();
+        
+        // Executa teste inicial
+        setTimeout(() => {
+            addTestResult('<strong>🎯 Teste Inicial Concluído</strong>', 'success');
+            addTestResult('Clique nos botões acima para executar testes específicos.', 'info');
+        }, 500);
+    </script></body></html> 

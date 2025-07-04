@@ -1,0 +1,166 @@
+<div class="top-bar bg-primary text-white py-2"><div class=container><div class="row align-items-center"><div class=col-md-8><div class="d-flex align-items-center"><i class="bi bi-stars me-3" style="font-size: 1.5rem;"></i><p class=mb-0>Framework JavaScript Moderno | Leve e Rápido | Sem Dependências</p></div></div><div class="col-md-4 text-end"><a href=/docs class="text-white text-decoration-none me-3" data-top-link=docs><i class="bi bi-book me-1"></i>Documentação </a><a href=https://github.com class="text-white text-decoration-none" target=_blank><i class="bi bi-github me-1"></i>GitHub </a></div></div></div></div><header class="header bg-white shadow-sm sticky-top"><nav class="navbar navbar-expand-lg navbar-light"><div class=container><a href=/ class="navbar-brand d-flex align-items-center"><i class="bi bi-code-slash text-primary me-2" style="font-size: 1.8rem;"></i><span class=fw-bold>MSoft Framework</span></a><button class="navbar-toggler border-0" type=button data-bs-toggle=collapse data-bs-target=#navbarNav><i class="bi bi-list" style="font-size: 1.5rem;"></i></button><div class="collapse navbar-collapse" id=navbarNav><ul class="navbar-nav ms-auto"><li class=nav-item><a class=nav-link href=/ data-menu-link=home><i class="bi bi-house-door me-1"></i>Início </a></li><li class=nav-item><a class=nav-link href=/framework data-menu-link=framework><i class="bi bi-gear me-1"></i>Framework </a></li><li class=nav-item><a class=nav-link href=/docs data-menu-link=docs><i class="bi bi-book me-1"></i>Documentação </a></li><li class=nav-item><a class=nav-link href=/examples data-menu-link=examples><i class="bi bi-code-square me-1"></i>Exemplos </a></li><li class=nav-item><a class=nav-link href=/about data-menu-link=about><i class="bi bi-info-circle me-1"></i>Sobre </a></li><li class=nav-item><a class="nav-link btn btn-primary text-white ms-2 px-4" href=/download data-menu-link=download><i class="bi bi-download me-1"></i>Download </a></li></ul></div></div></nav></header><div class=mobile-menu-overlay></div><style>
+/* Top Bar Styles */
+.top-bar {
+    background: linear-gradient(45deg, #4e54c8, #8f94fb);
+}
+
+/* Header Styles */
+.header {
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--bs-primary) !important;
+}
+
+.nav-link.btn {
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.nav-link.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Main Banner Styles */
+.main-banner {
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    min-height: 500px;
+    overflow: hidden;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    animation: slide 20s linear infinite;
+}
+
+.banner-image-container {
+    position: relative;
+    padding: 1rem;
+}
+
+.banner-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(78, 84, 200, 0.2), rgba(143, 148, 251, 0.2));
+    border-radius: 1rem;
+    transform: rotate(-3deg);
+    z-index: -1;
+}
+
+.banner-image-container img {
+    transform: rotate(3deg);
+    transition: all 0.3s ease;
+}
+
+.banner-image-container:hover img {
+    transform: rotate(0deg);
+}
+
+@keyframes slide {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 100% 100%;
+    }
+}
+
+/* Mobile Menu Styles */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        position: absolute;
+        top: 100%;
+        left: 1rem;
+        right: 1rem;
+    }
+
+    .nav-link.btn {
+        margin: 0.5rem 0;
+        text-align: center;
+    }
+
+    .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+
+    .navbar-collapse.show + .mobile-menu-overlay {
+        display: block;
+    }
+
+    .main-banner {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+}
+
+/* Animation */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--bs-primary);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link.btn::after {
+    display: none;
+}
+</style><script>
+// Mobile Menu Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+    
+    navbarToggler.addEventListener('click', function() {
+        document.body.classList.toggle('menu-open');
+    });
+    
+    mobileMenuOverlay.addEventListener('click', function() {
+        navbarToggler.click();
+    });
+});
+</script> 
