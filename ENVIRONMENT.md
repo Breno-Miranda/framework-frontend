@@ -14,7 +14,7 @@ O MSoft Framework utiliza um sistema robusto de variáveis de ambiente que permi
 2. **`env.development.js`** - Configurações para desenvolvimento
 3. **`env.production.js`** - Configurações para produção
 4. **`src/config/env.js`** - Sistema de carregamento de variáveis
-5. **`switch-env.js`** - Script para trocar entre ambientes
+5. **Sistema automático** - Detecção automática de ambiente
 
 ### Fluxo de Carregamento
 
@@ -40,15 +40,11 @@ cp env.example env.development.js
 
 ### 2. Configure o Ambiente
 
+O sistema detecta automaticamente o ambiente, mas você pode configurar manualmente se necessário:
+
 ```bash
-# Para desenvolvimento
-node switch-env.js development
-
-# Para produção
-node switch-env.js production
-
-# Verificar ambiente atual
-node switch-env.js status
+# Edite o index.html para escolher o ambiente
+# Descomente a linha do ambiente desejado
 ```
 
 ### 3. Edite as Variáveis
@@ -188,18 +184,7 @@ if (getEnv('ANALYTICS_ENABLED', false)) {
 
 ## 🔄 Troca de Ambiente
 
-### Usando o Script
-
-```bash
-# Ativar desenvolvimento
-node switch-env.js development
-
-# Ativar produção
-node switch-env.js production
-
-# Verificar ambiente atual
-node switch-env.js status
-```
+O sistema detecta automaticamente o ambiente, mas você pode configurar manualmente se necessário:
 
 ### Manualmente
 
@@ -323,9 +308,8 @@ O framework monitora automaticamente:
    ```
 
 2. **Ambiente não detectado**:
-   ```bash
-   node switch-env.js status
-   ```
+   - Verifique se o arquivo de ambiente está sendo carregado no index.html
+   - O sistema detecta automaticamente o ambiente
 
 3. **Configurações não aplicadas**:
    - Verifique se o arquivo de ambiente está sendo carregado

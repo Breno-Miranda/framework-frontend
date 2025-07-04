@@ -202,8 +202,8 @@ class UrlProcessor {
     
     const basePath = window.config?.basePath?.base_path || '';
     
-    // Se o BASE_PATH é '/$SUBPASTA', trata como raiz (desenvolvimento)
-    if (basePath === '/$SUBPASTA' || basePath === '/SUBPASTA') {
+    // Se o BASE_PATH é vazio, trata como raiz (desenvolvimento)
+    if (!basePath || basePath === '') {
       console.log('[UrlProcessor] resolveUrl - detectado ambiente de desenvolvimento, usando raiz');
       return path;
     }
@@ -244,8 +244,8 @@ class UrlProcessor {
     
     const basePath = window.config?.basePath?.base_path || '';
     
-    // Se o BASE_PATH é '/$SUBPASTA', não processa (desenvolvimento)
-    if (basePath === '/$SUBPASTA' || basePath === '/SUBPASTA') {
+    // Se o BASE_PATH é vazio, não processa (desenvolvimento)
+    if (!basePath || basePath === '') {
       return htmlContent;
     }
     

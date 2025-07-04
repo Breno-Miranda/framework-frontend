@@ -143,18 +143,22 @@ sed -i '' 's#src/assets/images/#assets/images/#g' $DIST_DIR/src/config/config.js
 sed -i '' 's#src/assets/favicon/#assets/favicon/#g' $DIST_DIR/src/config/config.js
 
 # 7. Configura BASE_PATH e basePath.auto antes da minificação
-echo "SUBPASTA: $SUBPASTA"
+echo "SUBPASTA: '$SUBPASTA'"
+echo "Parâmetro 1: '$1'"
 if [ -n "$1" ]; then
-  # Se passou parâmetro, configura para subpasta
+  # Se passou parâmetro (path dinâmico), configura para subpasta e auto: false
   sed -i '' "s|base_path: .*|base_path: '$SUBPASTA',|" $DIST_DIR/src/config/config.js
   sed -i '' "s|auto: .*|auto: false,|" $DIST_DIR/src/config/config.js
-  # Substitui a variável $SUBPASTA no env.js
-  sed -i '' "s|'/\$SUBPASTA'|'$SUBPASTA'|g" $DIST_DIR/src/config/env.js
-  echo "✓ BASE_PATH configurado para: $SUBPASTA (auto: false)"
+  # Substitui a variável BASE_PATH no env.js
+  sed -i '' "s|BASE_PATH: .*|BASE_PATH: '$SUBPASTA',|" $DIST_DIR/src/config/env.js
+  echo "✓ BASE_PATH configurado para: $SUBPASTA (auto: false) - Path dinâmico"
 else
-  # Se não passou parâmetro, mantém auto: true
+  # Se não passou parâmetro (raiz), configura BASE_PATH vazio e auto: true
+  sed -i '' "s|base_path: .*|base_path: '',|" $DIST_DIR/src/config/config.js
   sed -i '' "s|auto: .*|auto: true,|" $DIST_DIR/src/config/config.js
-  echo "✓ BASE_PATH mantido como auto: true"
+  # Substitui a variável BASE_PATH no env.js para vazio
+  sed -i '' "s|BASE_PATH: .*|BASE_PATH: '',|" $DIST_DIR/src/config/config.js
+  echo "✓ BASE_PATH configurado para: '' (vazio) com auto: true - Raiz"
 fi
 
 # 8. Minifica todos os JS em dist (exceto .min.js e vendor) usando Python/jsmin

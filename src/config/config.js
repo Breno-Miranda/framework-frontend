@@ -68,8 +68,8 @@ const config = {
       window.Debug?.log('[Config] basePath.resolve - path:', path);
       window.Debug?.log('[Config] basePath.resolve - basePath:', basePath);
       
-      // Se o BASE_PATH é '/$SUBPASTA', trata como raiz (desenvolvimento)
-      if (basePath === '/$SUBPASTA' || basePath === '/SUBPASTA') {
+      // Se o BASE_PATH é vazio, trata como raiz (desenvolvimento)
+      if (!basePath || basePath === '') {
         window.Debug?.log('[Config] basePath.resolve - detectado ambiente de desenvolvimento, usando raiz');
         return path;
       }

@@ -21,11 +21,8 @@ Um framework JavaScript moderno e leve para desenvolvimento web, focado em simpl
 
 3. **Configure o ambiente:**
    ```sh
-   # Opção 1: Interface web (recomendado)
-   open src/pages/switch-env.html
-   
-   # Opção 2: Manualmente
    # Edite index.html e comente/descomente as linhas de ambiente
+   # ou use o sistema automático de detecção
    ```
 
 4. **Abra `index.html` no seu navegador**
@@ -97,7 +94,7 @@ O sistema detecta automaticamente o ambiente e configura o `BASE_PATH` apropriad
 const config = {
   basePath: {
     auto: false, // Detecta automaticamente
-    development: "/$SUBPASTA", // Para desenvolvimento local
+    development: "", // Para desenvolvimento local (detectado automaticamente)
     production: "" // Para produção (raiz)
   }
 };
@@ -200,8 +197,8 @@ window.Helpers = {
   resolveUrl(path) {
     const basePath = window.BASE_PATH || '';
     
-    // Se o BASE_PATH for /$SUBPASTA (desenvolvimento), trata como raiz
-    if (basePath === '/$SUBPASTA') {
+    // Se o BASE_PATH for vazio, trata como raiz
+    if (!basePath || basePath === '') {
       return path;
     }
     
@@ -221,7 +218,7 @@ window.Helpers = {
   
   // Verifica se está em desenvolvimento
   isDevelopment() {
-    return window.BASE_PATH === '/$SUBPASTA';
+    return !window.BASE_PATH || window.BASE_PATH === '';
   }
 };
 ```
@@ -379,8 +376,7 @@ msoft-site/
 │   │   ├── env.development.js   # Configurações de desenvolvimento
 │   │   ├── env.production.js    # Configurações de produção
 │   │   ├── security.js          # Configurações de segurança
-│   │   ├── sw.js                # Service Worker
-│   │   └── switch-env.js        # Script para trocar ambientes
+│   │   └── sw.js                # Service Worker
 │   ├── core/                    # Core do framework
 │   │   ├── core.js              # Sistema principal (roteamento)
 │   │   ├── component.js         # Sistema de componentes
@@ -405,7 +401,6 @@ msoft-site/
 │   │   ├── cookies.html         # Política de cookies
 │   │   ├── lgpd.html            # LGPD
 │   │   ├── policy.html          # Políticas
-│   │   ├── switch-env.html      # Interface de troca de ambiente
 │   │   └── 404.html             # Página de erro
 │   ├── services/                # Serviços e APIs
 │   └── utils/                   # Utilitários
@@ -451,7 +446,7 @@ O framework suporta dois ambientes principais:
 - Logs detalhados
 - Cache reduzido
 - Validações mais permissivas
-- BASE_PATH: `/framework` (detectado automaticamente)
+- BASE_PATH: `""` (detectado automaticamente)
 
 #### Produção (`env.production.js`)
 - API URL: `https://api.msoft.com.br`
@@ -494,13 +489,7 @@ BASE_PATH=/framework|"" // Detectado automaticamente
 
 ### Troca de Ambiente
 
-#### Interface Web (Recomendado)
-Abra o arquivo `switch-env.html` no navegador para uma interface gráfica:
-
-```bash
-# Abra no navegador
-open switch-env.html
-```
+O sistema detecta automaticamente o ambiente, mas você pode configurar manualmente se necessário:
 
 #### Manualmente
 Edite o arquivo `index.html` e comente/descomente as linhas apropriadas:
@@ -510,18 +499,6 @@ Edite o arquivo `index.html` e comente/descomente as linhas apropriadas:
 <script src="/env.development.js"></script>
 <!-- Produção -->
 <!-- <script src="/env.production.js"></script> -->
-```
-
-#### Script Node.js (se disponível)
-```bash
-# Ativar desenvolvimento
-node switch-env.js development
-
-# Ativar produção
-node switch-env.js production
-
-# Verificar ambiente atual
-node switch-env.js status
 ```
 
 ## 🛠️ Desenvolvimento

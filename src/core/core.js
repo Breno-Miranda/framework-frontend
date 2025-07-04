@@ -253,9 +253,19 @@ class Core {
         }
 
         // Tenta carregar componente HTML
-        const componentPath = (window.config?.basePath?.auto === false && window.config?.basePath?.base_path)
-          ? `${window.config.basePath.base_path}/src/components/${name}.html`
-          : window.config?.basePath?.resolve(`/src/components/${name}.html`) || `/src/components/${name}.html`;
+        let componentPath;
+        
+        // Se BASE_PATH está vazio e auto está true, usa caminho absoluto
+        if ((!window.config?.basePath?.base_path || window.config.basePath.base_path === '') && 
+            window.config?.basePath?.auto === true) {
+          componentPath = `/src/components/${name}.html`;
+        } else if (window.config?.basePath?.auto === false && window.config?.basePath?.base_path) {
+          // Se auto está false e há BASE_PATH configurado
+          componentPath = `${window.config.basePath.base_path}/src/components/${name}.html`;
+        } else {
+          // Usa o resolve padrão
+          componentPath = window.config?.basePath?.resolve(`/src/components/${name}.html`) || `/src/components/${name}.html`;
+        }
         window.Debug?.log(`[Core] Tentando carregar componente HTML: ${componentPath}`);
         const res = await fetch(componentPath);
         if (res.ok) {
@@ -349,9 +359,19 @@ class Core {
     
     try {
       // Verifica se o arquivo existe no path
-      const filePath = (window.config?.basePath?.auto === false && window.config?.basePath?.base_path)
-        ? `${window.config.basePath.base_path}/src/pages/${pageName}.html`
-        : window.config?.basePath?.resolve(`/src/pages/${pageName}.html`) || `/src/pages/${pageName}.html`;
+      let filePath;
+      
+      // Se BASE_PATH está vazio e auto está true, usa caminho absoluto
+      if ((!window.config?.basePath?.base_path || window.config.basePath.base_path === '') && 
+          window.config?.basePath?.auto === true) {
+        filePath = `/src/pages/${pageName}.html`;
+      } else if (window.config?.basePath?.auto === false && window.config?.basePath?.base_path) {
+        // Se auto está false e há BASE_PATH configurado
+        filePath = `${window.config.basePath.base_path}/src/pages/${pageName}.html`;
+      } else {
+        // Usa o resolve padrão
+        filePath = window.config?.basePath?.resolve(`/src/pages/${pageName}.html`) || `/src/pages/${pageName}.html`;
+      }
 
       if (!this.registerPages.includes(pageName)) {
         throw new Error('Página não encontrada');
@@ -411,9 +431,19 @@ class Core {
       
       // Redireciona para 404
       try {
-        const errorPath = (window.config?.basePath?.auto === false && window.config?.basePath?.base_path)
-          ? `${window.config.basePath.base_path}/src/pages/404.html`
-          : window.config?.basePath?.resolve('/src/pages/404.html') || '/src/pages/404.html';
+        let errorPath;
+        
+        // Se BASE_PATH está vazio e auto está true, usa caminho absoluto
+        if ((!window.config?.basePath?.base_path || window.config.basePath.base_path === '') && 
+            window.config?.basePath?.auto === true) {
+          errorPath = `/src/pages/404.html`;
+        } else if (window.config?.basePath?.auto === false && window.config?.basePath?.base_path) {
+          // Se auto está false e há BASE_PATH configurado
+          errorPath = `${window.config.basePath.base_path}/src/pages/404.html`;
+        } else {
+          // Usa o resolve padrão
+          errorPath = window.config?.basePath?.resolve('/src/pages/404.html') || '/src/pages/404.html';
+        }
         const errorRes = await fetch(errorPath);
         if (errorRes.ok) {
           const errorHtml = await errorRes.text();

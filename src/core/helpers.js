@@ -70,8 +70,8 @@ const Helpers = {
     if (window.config?.basePath?.base_path) {
       const basePath = window.config.basePath.base_path;
       
-      // Se o BASE_PATH é '/$SUBPASTA', trata como raiz (desenvolvimento)
-      if (basePath === '/$SUBPASTA' || basePath === '/SUBPASTA') {
+      // Se o BASE_PATH é vazio, trata como raiz (desenvolvimento)
+      if (!basePath || basePath === '') {
         window.Debug?.log('[Helpers] resolveUrl - detectado ambiente de desenvolvimento, usando raiz');
         return path;
       }
