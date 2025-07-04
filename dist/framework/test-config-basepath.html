@@ -1,0 +1,322 @@
+<!DOCTYPE html><html lang=pt-BR><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>Teste Config BasePath - MSoft Framework</title><style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .config-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .toggle-section {
+            background: #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .toggle-section label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .toggle-section input[type="text"] {
+            padding: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 200px;
+        }
+    </style></head><body><div class=test-container><h1>🔧 Teste de Configuração BasePath</h1><p>Este arquivo testa a nova abordagem de configuração de caminho base dinâmico no config.js.</p><div class=test-container><h3>Configuração Atual</h3><div id=current-config></div></div><div class=test-container><h3>Controles de Configuração</h3><div class=toggle-section><label><input type=checkbox id=auto-toggle checked> Detecção Automática </label><br><br><label> Caminho Manual: <input type=text id=manual-path placeholder=/caminho/manual disabled></label></div></div><div class=test-container><h3>Testes de Funcionalidade</h3><button class=test-button onclick=testBasePathDetection()>Testar Detecção de Base Path</button><button class=test-button onclick=testPathResolution()>Testar Resolução de Caminhos</button><button class=test-button onclick=testPageLoading()>Testar Carregamento de Páginas</button><button class=test-button onclick=testComponentLoading()>Testar Carregamento de Componentes</button><button class=test-button onclick=runAllTests()>Executar Todos os Testes</button></div><div class=test-container><h3>Resultados dos Testes</h3><div id=test-results></div></div><div class=test-container><h3>Log de Debug</h3><div id=debug-log class=config-section style="max-height: 300px; overflow-y: auto;"></div><button class=test-button onclick=clearLog()>Limpar Log</button></div></div><script>
+        // Simula a configuração basePath
+        const TestConfig = {
+            basePath: {
+                auto: true,
+                manual: "",
+                getCurrent() {
+                    if (!this.auto) {
+                        logDebug('[TestConfig] basePath - usando caminho manual:', this.manual);
+                        return this.manual;
+                    }
+                    
+                    const pathname = window.location.pathname;
+                    const segments = pathname.split('/').filter(segment => segment !== '');
+                    
+                    logDebug('[TestConfig] basePath - pathname:', pathname);
+                    logDebug('[TestConfig] basePath - segments:', segments);
+                    
+                    if (segments.length === 0) {
+                        logDebug('[TestConfig] basePath - retornando raiz (vazio)');
+                        return '';
+                    }
+                    
+                    const lastSegment = segments[segments.length - 1];
+                    if (lastSegment && lastSegment.includes('.')) {
+                        segments.pop();
+                        logDebug('[TestConfig] basePath - removido arquivo:', lastSegment);
+                    }
+                    
+                    if (segments.length > 0) {
+                        const basePath = `/${segments.join('/')}`;
+                        logDebug('[TestConfig] basePath - retornando basePath:', basePath);
+                        return basePath;
+                    }
+                    
+                    logDebug('[TestConfig] basePath - retornando vazio (após processamento)');
+                    return '';
+                },
+                resolve(path) {
+                    if (!path || typeof path !== 'string') {
+                        logDebug('[TestConfig] basePath.resolve - path inválido:', path);
+                        return '';
+                    }
+                    
+                    const basePath = this.getCurrent();
+                    logDebug('[TestConfig] basePath.resolve - path:', path);
+                    logDebug('[TestConfig] basePath.resolve - basePath:', basePath);
+                    
+                    if (path.startsWith('/')) {
+                        const resolved = `${basePath}${path}`;
+                        logDebug('[TestConfig] basePath.resolve - caminho absoluto resolvido:', resolved);
+                        return resolved;
+                    }
+                    
+                    const resolved = `${basePath}/${path}`;
+                    logDebug('[TestConfig] basePath.resolve - caminho relativo resolvido:', resolved);
+                    return resolved;
+                }
+            }
+        };
+
+        function logDebug(message, data = null) {
+            const logDiv = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            
+            if (data) {
+                logEntry.innerHTML = `<span style="color: #17a2b8;">[${timestamp}]</span> ${message} <span style="color: #ffc107;">${JSON.stringify(data)}</span>`;
+            } else {
+                logEntry.innerHTML = `<span style="color: #17a2b8;">[${timestamp}]</span> ${message}`;
+            }
+            
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function addTestResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.innerHTML = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        function clearLog() {
+            document.getElementById('debug-log').innerHTML = '';
+        }
+
+        function updateConfig() {
+            const autoToggle = document.getElementById('auto-toggle');
+            const manualPath = document.getElementById('manual-path');
+            
+            TestConfig.basePath.auto = autoToggle.checked;
+            TestConfig.basePath.manual = manualPath.value;
+            
+            manualPath.disabled = autoToggle.checked;
+            
+            showCurrentConfig();
+        }
+
+        function showCurrentConfig() {
+            const configDiv = document.getElementById('current-config');
+            const currentBasePath = TestConfig.basePath.getCurrent();
+            
+            configDiv.innerHTML = `
+                <div class="config-section">
+                    <strong>Configuração Atual:</strong><br>
+                    Auto: ${TestConfig.basePath.auto ? '✅ Sim' : '❌ Não'}<br>
+                    Manual: ${TestConfig.basePath.manual || '(não definido)'}<br>
+                    Base Path Atual: ${currentBasePath || '(raiz)'}<br>
+                    URL Atual: ${window.location.href}
+                </div>
+            `;
+        }
+
+        function testBasePathDetection() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Detecção de Base Path</strong>', 'info');
+            
+            const testCases = [
+                { pathname: '/', expected: '' },
+                { pathname: '/docs/', expected: '/docs' },
+                { pathname: '/docs/index.html', expected: '/docs' },
+                { pathname: '/msoft-site/', expected: '/msoft-site' },
+                { pathname: '/msoft-site/index.html', expected: '/msoft-site' },
+                { pathname: '/subfolder/page.html', expected: '/subfolder' }
+            ];
+            
+            testCases.forEach(testCase => {
+                // Simula o pathname
+                const originalPathname = window.location.pathname;
+                Object.defineProperty(window.location, 'pathname', {
+                    value: testCase.pathname,
+                    writable: true
+                });
+                
+                const result = TestConfig.basePath.getCurrent();
+                const passed = result === testCase.expected;
+                
+                addTestResult(
+                    `${passed ? '✅' : '❌'} ${testCase.pathname} → ${result} (esperado: ${testCase.expected})`,
+                    passed ? 'success' : 'error'
+                );
+                
+                // Restaura o pathname original
+                Object.defineProperty(window.location, 'pathname', {
+                    value: originalPathname,
+                    writable: true
+                });
+            });
+        }
+
+        function testPathResolution() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Resolução de Caminhos</strong>', 'info');
+            
+            const testPaths = [
+                '/src/pages/home.html',
+                '/src/components/header.html',
+                '/assets/css/style.css',
+                'src/pages/about.html',
+                '/assets/vendor/css/bootstrap.min.css'
+            ];
+            
+            testPaths.forEach(path => {
+                const resolved = TestConfig.basePath.resolve(path);
+                addTestResult(`<strong>${path}</strong> → <code>${resolved}</code>`, 'info');
+            });
+        }
+
+        async function testPageLoading() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Carregamento de Páginas</strong>', 'info');
+            
+            const testPages = ['home', 'about', '404'];
+            
+            for (const page of testPages) {
+                try {
+                    const path = TestConfig.basePath.resolve(`/src/pages/${page}.html`);
+                    logDebug(`[Test] Tentando carregar página: ${path}`);
+                    
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        addTestResult(`✅ ${page}.html carregado com sucesso (${response.status})`, 'success');
+                    } else {
+                        addTestResult(`❌ ${page}.html falhou (${response.status})`, 'error');
+                    }
+                } catch (error) {
+                    addTestResult(`❌ ${page}.html erro: ${error.message}`, 'error');
+                    logDebug(`[Test] Erro ao carregar ${page}.html:`, error);
+                }
+            }
+        }
+
+        async function testComponentLoading() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Carregamento de Componentes</strong>', 'info');
+            
+            const testComponents = ['header', 'footer', 'modal'];
+            
+            for (const component of testComponents) {
+                try {
+                    const path = TestConfig.basePath.resolve(`/src/components/${component}.html`);
+                    logDebug(`[Test] Tentando carregar componente: ${path}`);
+                    
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        addTestResult(`✅ ${component}.html carregado com sucesso (${response.status})`, 'success');
+                    } else {
+                        addTestResult(`❌ ${component}.html falhou (${response.status})`, 'error');
+                    }
+                } catch (error) {
+                    addTestResult(`❌ ${component}.html erro: ${error.message}`, 'error');
+                    logDebug(`[Test] Erro ao carregar ${component}.html:`, error);
+                }
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('<strong>🚀 Executando Todos os Testes</strong>', 'info');
+            
+            setTimeout(() => testBasePathDetection(), 100);
+            setTimeout(() => testPathResolution(), 200);
+            setTimeout(() => testPageLoading(), 300);
+            setTimeout(() => testComponentLoading(), 400);
+        }
+
+        // Event listeners
+        document.getElementById('auto-toggle').addEventListener('change', updateConfig);
+        document.getElementById('manual-path').addEventListener('input', updateConfig);
+
+        // Inicialização
+        showCurrentConfig();
+        
+        setTimeout(() => {
+            addTestResult('<strong>🎯 Teste Inicializado</strong>', 'success');
+            addTestResult('Use os controles acima para testar diferentes configurações.', 'info');
+        }, 500);
+    </script></body></html> 

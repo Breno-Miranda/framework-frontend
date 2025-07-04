@@ -1,0 +1,219 @@
+<div class="bg-gradient-primary text-white py-5"><div class=container><div class="row text-center"><div class="col-lg-8 mx-auto"><h1 class="display-4 fw-bold mb-4">Exemplos Práticos</h1><p class="lead mb-4">Veja como o MSoft Framework pode ser usado em diferentes cenários reais</p><div class="d-flex justify-content-center gap-3 flex-wrap"><a href=#basic-examples class="btn btn-light btn-lg">Básicos</a><a href=#advanced-examples class="btn btn-outline-light btn-lg">Avançados</a><a href=#real-projects class="btn btn-outline-light btn-lg">Projetos Reais</a></div></div></div></div></div><div class="container py-5" id=basic-examples><h2 class="text-center mb-5">Exemplos Básicos</h2><div class="row g-4"><div class=col-lg-6><div class="card h-100 border-0 shadow-sm"><div class="card-header bg-primary text-white"><h5 class=mb-0><i class="bi bi-plus-circle me-2"></i>Contador Interativo </h5></div><div class=card-body><p class=card-text>Um contador simples que demonstra interatividade básica.</p><div class="demo-counter text-center p-4 bg-light rounded mb-3"><h3>Contador: <span id=demo-counter>0</span></h3><div class=btn-group role=group><button class="btn btn-outline-primary" onclick=decrementCounter()>-1</button><button class="btn btn-outline-secondary" onclick=resetCounter()>Reset</button><button class="btn btn-outline-primary" onclick=incrementCounter()>+1</button></div></div><div class="bg-dark text-light p-3 rounded"><pre><code>&lt;div class="counter"&gt;
+  &lt;h3&gt;Contador: &lt;span id="counter"&gt;0&lt;/span&gt;&lt;/h3&gt;
+  &lt;button onclick="increment()"&gt;+1&lt;/button&gt;
+  &lt;button onclick="decrement()"&gt;-1&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+let count = 0;
+function increment() {
+  count++;
+  document.getElementById('counter').textContent = count;
+}
+&lt;/script&gt;</code></pre></div></div></div></div><div class=col-lg-6><div class="card h-100 border-0 shadow-sm"><div class="card-header bg-success text-white"><h5 class=mb-0><i class="bi bi-check-circle me-2"></i>Validação de Formulário </h5></div><div class=card-body><p class=card-text>Formulário com validação em tempo real usando os utilitários do framework.</p><form id=demo-form class=mb-3><div class=mb-3><label for=demo-email class=form-label>Email</label><input type=email class=form-control id=demo-email placeholder=seu@email.com><div class=invalid-feedback>Email inválido</div></div><div class=mb-3><label for=demo-phone class=form-label>Telefone</label><input type=tel class=form-control id=demo-phone placeholder="(11) 99999-9999"><div class=invalid-feedback>Telefone inválido</div></div><button type=submit class="btn btn-success">Validar</button></form><div class="bg-dark text-light p-3 rounded"><pre><code>// Validação com helpers
+const email = document.getElementById('email').value;
+const phone = document.getElementById('phone').value;
+
+if (helpers.validateEmail(email) && 
+    helpers.validatePhone(phone)) {
+    // Form válido
+    core.toast('Formulário válido!', 'success');
+}</code></pre></div></div></div></div><div class=col-lg-6><div class="card h-100 border-0 shadow-sm"><div class="card-header bg-info text-white"><h5 class=mb-0><i class="bi bi-arrow-clockwise me-2"></i>Conteúdo Dinâmico </h5></div><div class=card-body><p class=card-text>Carregamento dinâmico de conteúdo usando componentes.</p><div class=mb-3><button class="btn btn-info" onclick=loadDynamicContent()><i class="bi bi-download me-2"></i>Carregar Conteúdo </button></div><div id=dynamic-content class="p-3 bg-light rounded"><p class=text-muted>Clique no botão para carregar conteúdo dinâmico...</p></div><div class="bg-dark text-light p-3 rounded mt-3"><pre><code>// Carregamento dinâmico
+function loadContent() {
+  core.loadComponent('dynamic-content', '#container');
+}
+
+// Ou com dados
+core.loadComponent('user-card', '#user-container', {
+  userId: 123,
+  name: 'João Silva'
+});</code></pre></div></div></div></div><div class=col-lg-6><div class="card h-100 border-0 shadow-sm"><div class="card-header bg-warning text-dark"><h5 class=mb-0><i class="bi bi-database me-2"></i>Local Storage </h5></div><div class=card-body><p class=card-text>Demonstração do sistema de armazenamento local.</p><div class=mb-3><input type=text class="form-control mb-2" id=storage-key placeholder=Chave><input type=text class="form-control mb-2" id=storage-value placeholder=Valor><div class=btn-group role=group><button class="btn btn-warning" onclick=saveToStorage()>Salvar</button><button class="btn btn-outline-warning" onclick=loadFromStorage()>Carregar</button><button class="btn btn-outline-danger" onclick=clearStorage()>Limpar</button></div></div><div id=storage-display class="p-2 bg-light rounded"><small class=text-muted>Dados salvos aparecerão aqui...</small></div><div class="bg-dark text-light p-3 rounded mt-3"><pre><code>// Storage helpers
+helpers.setStorage('user', { name: 'João', age: 30 });
+const user = helpers.getStorage('user');
+helpers.removeStorage('user');</code></pre></div></div></div></div></div></div><div class="bg-light py-5" id=advanced-examples><div class=container><h2 class="text-center mb-5">Exemplos Avançados</h2><div class="row g-4"><div class=col-lg-8><div class="card border-0 shadow-sm"><div class="card-header bg-primary text-white"><h5 class=mb-0><i class="bi bi-cloud me-2"></i>Integração com API </h5></div><div class=card-body><p class=card-text>Exemplo de como integrar com APIs REST usando o framework.</p><div class=row><div class=col-md-6><h6>Buscar Usuários</h6><button class="btn btn-primary mb-3" onclick=fetchUsers()><i class="bi bi-people me-2"></i>Carregar Usuários </button><div id=users-list class="border rounded p-3 bg-white"><p class=text-muted>Clique para carregar usuários...</p></div></div><div class=col-md-6><h6>Formulário de Usuário</h6><form id=user-form><div class=mb-2><input type=text class=form-control id=user-name placeholder=Nome></div><div class=mb-2><input type=email class=form-control id=user-email placeholder=Email></div><button type=submit class="btn btn-success">Criar Usuário</button></form></div></div><div class="bg-dark text-light p-3 rounded mt-3"><pre><code>// API Integration
+async function fetchUsers() {
+  try {
+    const response = await fetch('/api/users');
+    const users = await response.json();
+    displayUsers(users);
+  } catch (error) {
+    core.toast('Erro ao carregar usuários', 'error');
+  }
+}
+
+async function createUser(userData) {
+  const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
+  });
+  return response.json();
+}</code></pre></div></div></div></div><div class=col-lg-4><div class="card border-0 shadow-sm"><div class="card-header bg-success text-white"><h5 class=mb-0><i class="bi bi-lightning me-2"></i>Atualizações em Tempo Real </h5></div><div class=card-body><p class=card-text>Simulação de atualizações em tempo real.</p><div class="text-center mb-3"><div class="h4 text-success" id=real-time-counter>0</div><small class=text-muted>Atualizações por segundo</small></div><div class="d-flex gap-2"><button class="btn btn-success btn-sm" onclick=startRealTime()>Iniciar</button><button class="btn btn-outline-secondary btn-sm" onclick=stopRealTime()>Parar</button></div><div class=mt-3><small class=text-muted>Últimas atualizações:</small><div id=updates-log class="small text-muted mt-1"><div>Nenhuma atualização ainda...</div></div></div></div></div></div></div></div></div><div class="container py-5" id=real-projects><h2 class="text-center mb-5">Projetos Reais</h2><div class="row g-4"><div class=col-lg-4><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center"><div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;"><i class="bi bi-shop text-primary" style="font-size: 2rem;"></i></div><h5 class=card-title>E-commerce</h5><p class=card-text>Loja online completa com carrinho de compras, checkout e sistema de pagamento.</p><div class="d-flex justify-content-center gap-2"><span class="badge bg-primary">Componentes</span><span class="badge bg-success">API</span><span class="badge bg-info">Storage</span></div></div></div></div><div class=col-lg-4><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center"><div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;"><i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i></div><h5 class=card-title>Sistema de Agendamento</h5><p class=card-text>Plataforma de agendamento com calendário interativo e notificações.</p><div class="d-flex justify-content-center gap-2"><span class="badge bg-primary">Calendário</span><span class="badge bg-warning">Notificações</span><span class="badge bg-info">Real-time</span></div></div></div></div><div class=col-lg-4><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center"><div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;"><i class="bi bi-graph-up text-info" style="font-size: 2rem;"></i></div><h5 class=card-title>Dashboard Analytics</h5><p class=card-text>Painel de controle com gráficos, métricas e relatórios em tempo real.</p><div class="d-flex justify-content-center gap-2"><span class="badge bg-primary">Gráficos</span><span class="badge bg-success">Métricas</span><span class="badge bg-warning">Real-time</span></div></div></div></div></div></div><style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.demo-counter {
+    border: 2px dashed #dee2e6;
+}
+
+#dynamic-content {
+    min-height: 100px;
+}
+
+#storage-display {
+    min-height: 60px;
+}
+
+#updates-log {
+    max-height: 100px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+}
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+}
+</style><script>
+// Counter functionality
+let counterValue = 0;
+let realTimeInterval;
+
+function incrementCounter() {
+    counterValue++;
+    document.getElementById('demo-counter').textContent = counterValue;
+}
+
+function decrementCounter() {
+    counterValue--;
+    document.getElementById('demo-counter').textContent = counterValue;
+}
+
+function resetCounter() {
+    counterValue = 0;
+    document.getElementById('demo-counter').textContent = counterValue;
+}
+
+// Form validation
+document.getElementById('demo-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('demo-email').value;
+    const phone = document.getElementById('demo-phone').value;
+    
+    // Simulate validation
+    if (email && phone) {
+        core.toast('Formulário válido!', 'success');
+    } else {
+        core.toast('Preencha todos os campos', 'error');
+    }
+});
+
+// Dynamic content
+function loadDynamicContent() {
+    const container = document.getElementById('dynamic-content');
+    container.innerHTML = `
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            Conteúdo carregado dinamicamente!
+        </div>
+        <p>Este conteúdo foi carregado usando o sistema de componentes do MSoft Framework.</p>
+        <small class="text-muted">Carregado em: ${new Date().toLocaleTimeString()}</small>
+    `;
+}
+
+// Storage functionality
+function saveToStorage() {
+    const key = document.getElementById('storage-key').value;
+    const value = document.getElementById('storage-value').value;
+    
+    if (key && value) {
+        localStorage.setItem(key, value);
+        updateStorageDisplay();
+        core.toast('Dados salvos!', 'success');
+    }
+}
+
+function loadFromStorage() {
+    const key = document.getElementById('storage-key').value;
+    if (key) {
+        const value = localStorage.getItem(key);
+        document.getElementById('storage-value').value = value || '';
+        updateStorageDisplay();
+    }
+}
+
+function clearStorage() {
+    localStorage.clear();
+    updateStorageDisplay();
+    core.toast('Storage limpo!', 'info');
+}
+
+function updateStorageDisplay() {
+    const display = document.getElementById('storage-display');
+    const items = Object.keys(localStorage);
+    
+    if (items.length === 0) {
+        display.innerHTML = '<small class="text-muted">Nenhum dado salvo...</small>';
+    } else {
+        display.innerHTML = items.map(key => 
+            `<div><strong>${key}:</strong> ${localStorage.getItem(key)}</div>`
+        ).join('');
+    }
+}
+
+// Real-time updates
+function startRealTime() {
+    let count = 0;
+    realTimeInterval = setInterval(() => {
+        count++;
+        document.getElementById('real-time-counter').textContent = count;
+        
+        const log = document.getElementById('updates-log');
+        const time = new Date().toLocaleTimeString();
+        log.innerHTML = `<div>Atualização ${count} - ${time}</div>` + log.innerHTML;
+        
+        if (log.children.length > 5) {
+            log.removeChild(log.lastChild);
+        }
+    }, 1000);
+}
+
+function stopRealTime() {
+    if (realTimeInterval) {
+        clearInterval(realTimeInterval);
+        realTimeInterval = null;
+    }
+}
+
+// API simulation
+function fetchUsers() {
+    const usersList = document.getElementById('users-list');
+    usersList.innerHTML = '<div class="spinner-border spinner-border-sm me-2"></div>Carregando...';
+    
+    setTimeout(() => {
+        const mockUsers = [
+            { id: 1, name: 'João Silva', email: 'joao@email.com' },
+            { id: 2, name: 'Maria Santos', email: 'maria@email.com' },
+            { id: 3, name: 'Pedro Costa', email: 'pedro@email.com' }
+        ];
+        
+        usersList.innerHTML = mockUsers.map(user => 
+            `<div class="border-bottom py-2">
+                <strong>${user.name}</strong><br>
+                <small class="text-muted">${user.email}</small>
+            </div>`
+        ).join('');
+    }, 1000);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateStorageDisplay();
+});
+</script> 

@@ -1,0 +1,75 @@
+<div class="bg-gradient-primary text-white py-5"><div class=container><div class="row text-center"><div class="col-lg-8 mx-auto"><h1 class="display-4 fw-bold mb-4">MSoft Framework</h1><p class="lead mb-4">Um framework JavaScript moderno, leve e poderoso para desenvolvimento web</p><div class="d-flex justify-content-center gap-3 flex-wrap"><a href=#overview class="btn btn-light btn-lg">Visão Geral</a><a href=#architecture class="btn btn-outline-light btn-lg">Arquitetura</a><a href=#features class="btn btn-outline-light btn-lg">Funcionalidades</a></div></div></div></div></div><div class="container py-5" id=overview><div class="row align-items-center"><div class=col-lg-6><h2 class="display-6 fw-bold mb-4">O que é o MSoft Framework?</h2><p class="lead mb-4"> O MSoft Framework é uma solução JavaScript moderna e minimalista, projetada para desenvolvedores que buscam simplicidade sem comprometer a funcionalidade. </p><p class=mb-4> Diferente dos frameworks pesados e complexos, o MSoft oferece uma abordagem direta e eficiente para criar aplicações web responsivas e performáticas. </p><div class="row g-3 mb-4"><div class=col-6><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-2"></i><span>Leve (~15KB)</span></div></div><div class=col-6><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-2"></i><span>Rápido</span></div></div><div class=col-6><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-2"></i><span>Sem Dependências</span></div></div><div class=col-6><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-2"></i><span>Fácil de Aprender</span></div></div></div><a href=#architecture class="btn btn-primary btn-lg"><i class="bi bi-arrow-down me-2"></i>Conhecer Arquitetura </a></div><div class=col-lg-6><div class=text-center><div class="framework-stats bg-light rounded p-4 shadow-sm"><div class="row text-center"><div class=col-4><div class="h3 text-primary mb-1">15KB</div><small class=text-muted>Tamanho</small></div><div class=col-4><div class="h3 text-success mb-1">100ms</div><small class=text-muted>Carregamento</small></div><div class=col-4><div class="h3 text-info mb-1">0</div><small class=text-muted>Dependências</small></div></div></div><div class="code-preview bg-dark rounded p-4 mt-4 shadow-lg"><div class="d-flex justify-content-between mb-3"><span class=text-light>msoft.js</span><div class="d-flex gap-2"><div class="circle bg-danger"></div><div class="circle bg-warning"></div><div class="circle bg-success"></div></div></div><pre class="text-light mb-0"><code>// MSoft Framework Core
+class MSoft {
+  constructor(config) {
+    this.config = config;
+    this.components = new Map();
+    this.routes = new Map();
+  }
+  
+  init() {
+    this.loadComponents();
+    this.setupRouting();
+    this.attachEventListeners();
+  }
+  
+  loadComponent(name, target) {
+    // Component loading logic
+  }
+}</code></pre></div></div></div></div></div><div class="bg-light py-5" id=architecture><div class=container><div class="row text-center mb-5"><div class="col-lg-8 mx-auto"><h2 class="display-6 fw-bold mb-3">Arquitetura do Framework</h2><p class="lead text-muted">Uma arquitetura modular e escalável projetada para máxima flexibilidade</p></div></div><div class="row g-4"><div class=col-lg-4><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center p-4"><div class="architecture-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;"><i class="bi bi-gear text-primary" style="font-size: 2rem;"></i></div><h5 class=card-title>Core Engine</h5><p class=card-text>Motor principal responsável pela inicialização, gerenciamento de componentes e sistema de rotas.</p><ul class="list-unstyled text-start"><li><i class="bi bi-check text-success me-2"></i>Inicialização automática</li><li><i class="bi bi-check text-success me-2"></i>Gerenciamento de estado</li><li><i class="bi bi-check text-success me-2"></i>Sistema de eventos</li></ul></div></div></div><div class=col-lg-4><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center p-4"><div class="architecture-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;"><i class="bi bi-puzzle text-success" style="font-size: 2rem;"></i></div><h5 class=card-title>Component System</h5><p class=card-text>Sistema de componentes reutilizáveis com carregamento lazy e cache inteligente.</p><ul class="list-unstyled text-start"><li><i class="bi bi-check text-success me-2"></i>Carregamento lazy</li><li><i class="bi bi-check text-success me-2"></i>Cache automático</li><li><i class="bi bi-check text-success me-2"></i>Reutilização</li></ul></div></div></div><div class=col-lg-4><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center p-4"><div class="architecture-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;"><i class="bi bi-arrow-left-right text-info" style="font-size: 2rem;"></i></div><h5 class=card-title>Routing System</h5><p class=card-text>Sistema de roteamento inteligente com suporte a navegação programática e histórico.</p><ul class="list-unstyled text-start"><li><i class="bi bi-check text-success me-2"></i>Navegação SPA</li><li><i class="bi bi-check text-success me-2"></i>Histórico do browser</li><li><i class="bi bi-check text-success me-2"></i>Parâmetros de URL</li></ul></div></div></div></div><div class="row mt-5"><div class=col-12><div class="card border-0 shadow-sm"><div class="card-header bg-dark text-white"><h5 class=mb-0><i class="bi bi-diagram-3 me-2"></i>Diagrama da Arquitetura </h5></div><div class="card-body p-4"><div class="architecture-diagram text-center"><div class="row g-3"><div class=col-md-3><div class="arch-layer bg-primary text-white p-3 rounded"><h6>Presentation Layer</h6><small>HTML Components</small></div></div><div class=col-md-3><div class="arch-layer bg-success text-white p-3 rounded"><h6>Component Layer</h6><small>Reusable Components</small></div></div><div class=col-md-3><div class="arch-layer bg-info text-white p-3 rounded"><h6>Core Layer</h6><small>Framework Engine</small></div></div><div class=col-md-3><div class="arch-layer bg-warning text-dark p-3 rounded"><h6>Utility Layer</h6><small>Helpers & Utils</small></div></div></div><div class=mt-4><div class="d-flex justify-content-center align-items-center"><div class=arch-arrow><i class="bi bi-arrow-down text-primary"></i></div></div><div class="arch-data bg-light p-3 rounded mt-2"><small class=text-muted>Data Flow & State Management</small></div></div></div></div></div></div></div></div></div><div class="container py-5" id=features><div class="row text-center mb-5"><div class="col-lg-8 mx-auto"><h2 class="display-6 fw-bold mb-3">Funcionalidades Principais</h2><p class="lead text-muted">Tudo que você precisa para criar aplicações web modernas</p></div></div><div class="row g-4"><div class="col-md-6 col-lg-4"><div class="feature-item card h-100 border-0 shadow-sm"><div class="card-body p-4"><div class="feature-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-lightning text-primary" style="font-size: 1.5rem;"></i></div><h5 class=card-title>Performance Otimizada</h5><p class=card-text>Carregamento ultra-rápido com otimizações automáticas e cache inteligente.</p><ul class="list-unstyled small"><li><i class="bi bi-check text-success me-2"></i>Lazy loading de componentes</li><li><i class="bi bi-check text-success me-2"></i>Cache automático</li><li><i class="bi bi-check text-success me-2"></i>Minificação automática</li></ul></div></div></div><div class="col-md-6 col-lg-4"><div class="feature-item card h-100 border-0 shadow-sm"><div class="card-body p-4"><div class="feature-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-shield-check text-success" style="font-size: 1.5rem;"></i></div><h5 class=card-title>Segurança Integrada</h5><p class=card-text>Proteções automáticas contra vulnerabilidades comuns da web.</p><ul class="list-unstyled small"><li><i class="bi bi-check text-success me-2"></i>Proteção XSS</li><li><i class="bi bi-check text-success me-2"></i>Validação de entrada</li><li><i class="bi bi-check text-success me-2"></i>Sanitização de dados</li></ul></div></div></div><div class="col-md-6 col-lg-4"><div class="feature-item card h-100 border-0 shadow-sm"><div class="card-body p-4"><div class="feature-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-phone text-info" style="font-size: 1.5rem;"></i></div><h5 class=card-title>Responsivo Nativo</h5><p class=card-text>Design responsivo automático com suporte completo para dispositivos móveis.</p><ul class="list-unstyled small"><li><i class="bi bi-check text-success me-2"></i>Mobile-first design</li><li><i class="bi bi-check text-success me-2"></i>Touch-friendly</li><li><i class="bi bi-check text-success me-2"></i>Adaptação automática</li></ul></div></div></div><div class="col-md-6 col-lg-4"><div class="feature-item card h-100 border-0 shadow-sm"><div class="card-body p-4"><div class="feature-icon bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-tools text-warning" style="font-size: 1.5rem;"></i></div><h5 class=card-title>Ferramentas de Desenvolvimento</h5><p class=card-text>Conjunto completo de ferramentas para facilitar o desenvolvimento.</p><ul class="list-unstyled small"><li><i class="bi bi-check text-success me-2"></i>Hot reload</li><li><i class="bi bi-check text-success me-2"></i>Debug tools</li><li><i class="bi bi-check text-success me-2"></i>Build automation</li></ul></div></div></div><div class="col-md-6 col-lg-4"><div class="feature-item card h-100 border-0 shadow-sm"><div class="card-body p-4"><div class="feature-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-database text-danger" style="font-size: 1.5rem;"></i></div><h5 class=card-title>Gerenciamento de Estado</h5><p class=card-text>Sistema robusto de gerenciamento de estado com persistência automática.</p><ul class="list-unstyled small"><li><i class="bi bi-check text-success me-2"></i>State persistence</li><li><i class="bi bi-check text-success me-2"></i>Reactive updates</li><li><i class="bi bi-check text-success me-2"></i>Local storage</li></ul></div></div></div><div class="col-md-6 col-lg-4"><div class="feature-item card h-100 border-0 shadow-sm"><div class="card-body p-4"><div class="feature-icon bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-code-slash text-secondary" style="font-size: 1.5rem;"></i></div><h5 class=card-title>Vanilla JavaScript</h5><p class=card-text>Baseado em JavaScript puro, sem dependências externas ou transpilação.</p><ul class="list-unstyled small"><li><i class="bi bi-check text-success me-2"></i>Zero dependencies</li><li><i class="bi bi-check text-success me-2"></i>Modern ES6+</li><li><i class="bi bi-check text-success me-2"></i>Browser compatibility</li></ul></div></div></div></div></div><div class="bg-light py-5"><div class=container><div class="row text-center mb-5"><div class="col-lg-8 mx-auto"><h2 class="display-6 fw-bold mb-3">Por que escolher o MSoft?</h2><p class="lead text-muted">Comparação com outros frameworks populares</p></div></div><div class=row><div class=col-12><div class=table-responsive><table class="table table-hover bg-white rounded shadow-sm"><thead class=table-dark><tr><th>Característica</th><th class=text-center>MSoft</th><th class=text-center>React</th><th class=text-center>Vue.js</th><th class=text-center>Angular</th></tr></thead><tbody><tr><td><strong>Tamanho</strong></td><td class="text-center text-success">15KB</td><td class=text-center>42KB</td><td class=text-center>34KB</td><td class=text-center>143KB</td></tr><tr><td><strong>Curva de Aprendizado</strong></td><td class="text-center text-success">Baixa</td><td class=text-center>Média</td><td class=text-center>Baixa</td><td class=text-center>Alta</td></tr><tr><td><strong>Dependências</strong></td><td class="text-center text-success">0</td><td class=text-center>Muitas</td><td class=text-center>Poucas</td><td class=text-center>Muitas</td></tr><tr><td><strong>Performance</strong></td><td class="text-center text-success">Excelente</td><td class=text-center>Boa</td><td class=text-center>Boa</td><td class=text-center>Média</td></tr><tr><td><strong>Configuração</strong></td><td class="text-center text-success">Simples</td><td class=text-center>Complexa</td><td class=text-center>Média</td><td class=text-center>Complexa</td></tr></tbody></table></div></div></div></div></div><div class="bg-primary text-white py-5"><div class=container><div class="row text-center"><div class="col-lg-8 mx-auto"><h2 class="display-6 fw-bold mb-4">Pronto para começar?</h2><p class="lead mb-4">Junte-se a milhares de desenvolvedores que já estão usando o MSoft Framework</p><div class="d-flex justify-content-center gap-3 flex-wrap"><a href=/docs class="btn btn-light btn-lg"><i class="bi bi-book me-2"></i>Documentação </a><a href=/examples class="btn btn-outline-light btn-lg"><i class="bi bi-code-square me-2"></i>Exemplos </a><a href=/download class="btn btn-outline-light btn-lg"><i class="bi bi-download me-2"></i>Download </a></div></div></div></div></div><style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.framework-stats {
+    border: 2px dashed #dee2e6;
+}
+
+.code-preview {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.architecture-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover .architecture-icon {
+    transform: scale(1.1);
+}
+
+.arch-layer {
+    transition: transform 0.3s ease;
+}
+
+.arch-layer:hover {
+    transform: translateY(-5px);
+}
+
+.arch-arrow {
+    font-size: 2rem;
+}
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+}
+
+.table th {
+    border-top: none;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style> 

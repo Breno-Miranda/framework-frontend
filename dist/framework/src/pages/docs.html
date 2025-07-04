@@ -1,0 +1,218 @@
+<div class="bg-gradient-primary text-white py-5"><div class=container><div class="row text-center"><div class="col-lg-8 mx-auto"><h1 class="display-4 fw-bold mb-4">Documentação MSoft Framework</h1><p class="lead mb-4">Aprenda a usar todas as funcionalidades do framework de forma simples e eficiente</p><div class="d-flex justify-content-center gap-3 flex-wrap"><a href=#getting-started class="btn btn-light btn-lg">Começar</a><a href=#components class="btn btn-outline-light btn-lg">Componentes</a><a href=#api class="btn btn-outline-light btn-lg">API</a></div></div></div></div></div><div class="container py-4"><div class=row><div class=col-lg-3><div class=sticky-top style="top: 2rem;"><div class="card border-0 shadow-sm"><div class="card-header bg-primary text-white"><h5 class=mb-0>Índice</h5></div><div class="card-body p-0"><nav class="nav flex-column"><a class=nav-link href=#getting-started>1. Primeiros Passos</a><a class=nav-link href=#installation>2. Instalação</a><a class=nav-link href=#configuration>3. Configuração</a><a class=nav-link href=#components>4. Componentes</a><a class=nav-link href=#routing>5. Sistema de Rotas</a><a class=nav-link href=#api>6. API Reference</a><a class=nav-link href=#examples>7. Exemplos</a></nav></div></div></div></div><div class=col-lg-9><section id=getting-started class=mb-5><h2 class="border-bottom pb-3 mb-4">1. Primeiros Passos</h2><p class=lead>O MSoft Framework é um framework JavaScript moderno e leve, perfeito para projetos pequenos e médios.</p><div class="alert alert-info"><i class="bi bi-info-circle me-2"></i><strong>Pré-requisitos:</strong> Conhecimento básico de HTML, CSS e JavaScript </div><h3>Características Principais</h3><ul><li><strong>Leve:</strong> Apenas ~15KB minificado</li><li><strong>Rápido:</strong> Carregamento instantâneo</li><li><strong>Simples:</strong> Configuração em poucos passos</li><li><strong>Modular:</strong> Sistema de componentes reutilizáveis</li><li><strong>Responsivo:</strong> Suporte nativo para mobile</li></ul></section><section id=installation class=mb-5><h2 class="border-bottom pb-3 mb-4">2. Instalação</h2><h3>Método 1: Download Direto</h3><div class="bg-dark text-light p-3 rounded mb-3"><code>git clone https://github.com/msoft/framework.git</code></div><h3>Método 2: Via NPM</h3><div class="bg-dark text-light p-3 rounded mb-3"><code>npm install msoft-framework</code></div><h3>Estrutura de Arquivos</h3><pre class="bg-light p-3 rounded"><code>msoft-framework/
+├── src/
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── vendor/
+│   ├── components/
+│   ├── pages/
+│   └── config/
+├── index.html
+└── build.sh</code></pre></section><section id=configuration class=mb-5><h2 class="border-bottom pb-3 mb-4">3. Configuração</h2><h3>Configuração Básica</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// config.js
+const config = {
+  app: {
+    name: "Meu Projeto",
+    version: "1.0.0",
+    environment: "development"
+  },
+  routes: {
+    defaultPage: "home",
+    validPages: ["home", "about", "contact"]
+  },
+  components: {
+    path: "/components",
+    lazyLoad: true,
+    cache: {
+      enabled: true,
+      duration: 3600
+    }
+  }
+};</code></pre></div><h3>Variáveis de Ambiente</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// env.development.js
+window.ENV = {
+  NODE_ENV: "development",
+  API_BASE_URL: "http://localhost:3000",
+  DEBUG: true
+};</code></pre></div></section><section id=components class=mb-5><h2 class="border-bottom pb-3 mb-4">4. Componentes</h2><h3>Criando um Componente</h3><p>Componentes são arquivos HTML reutilizáveis que podem ser carregados dinamicamente.</p><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// components/header.html
+&lt;header class="navbar navbar-expand-lg navbar-dark bg-primary"&gt;
+  &lt;div class="container"&gt;
+    &lt;a class="navbar-brand" href="/"&gt;MSoft Framework&lt;/a&gt;
+    &lt;nav class="navbar-nav ms-auto"&gt;
+      &lt;a class="nav-link" href="/home"&gt;Home&lt;/a&gt;
+      &lt;a class="nav-link" href="/about"&gt;Sobre&lt;/a&gt;
+      &lt;a class="nav-link" href="/contact"&gt;Contato&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/div&gt;
+&lt;/header&gt;</code></pre></div><h3>Usando Componentes</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// No HTML
+&lt;div data-component="header"&gt;&lt;/div&gt;
+
+// No JavaScript
+core.loadComponent('header', '#header-container');</code></pre></div><h3>Componentes com JavaScript</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// components/modal.html
+&lt;div class="modal fade" id="exampleModal"&gt;
+  &lt;div class="modal-dialog"&gt;
+    &lt;div class="modal-content"&gt;
+      &lt;div class="modal-header"&gt;
+        &lt;h5 class="modal-title"&gt;Título&lt;/h5&gt;
+        &lt;button type="button" class="btn-close" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class="modal-body"&gt;
+        Conteúdo do modal
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// JavaScript do componente
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar modal
+  const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+});
+&lt;/script&gt;</code></pre></div></section><section id=routing class=mb-5><h2 class="border-bottom pb-3 mb-4">5. Sistema de Rotas</h2><h3>Configuração de Rotas</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>const config = {
+  routes: {
+    defaultPage: "home",
+    page404: "404",
+    validPages: [
+      'home', 
+      'about',
+      'contact',
+      'docs',
+      '404'
+    ],
+    navigation: {
+      enableHistory: true,
+      enableScrollRestoration: true,
+      scrollBehavior: 'smooth'
+    }
+  }
+};</code></pre></div><h3>Navegação Programática</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// Navegar para uma página
+core.navigate('about');
+
+// Navegar com parâmetros
+core.navigate('contact', { id: 123 });
+
+// Voltar para página anterior
+core.goBack();
+
+// Recarregar página atual
+core.reload();</code></pre></div></section><section id=api class=mb-5><h2 class="border-bottom pb-3 mb-4">6. API Reference</h2><h3>Core API</h3><div class=table-responsive><table class="table table-striped"><thead><tr><th>Método</th><th>Descrição</th><th>Exemplo</th></tr></thead><tbody><tr><td><code>core.init()</code></td><td>Inicializa o framework</td><td><code>core.init(config)</code></td></tr><tr><td><code>core.navigate()</code></td><td>Navega para uma página</td><td><code>core.navigate('home')</code></td></tr><tr><td><code>core.loadComponent()</code></td><td>Carrega um componente</td><td><code>core.loadComponent('header', '#container')</code></td></tr><tr><td><code>core.toast()</code></td><td>Exibe uma notificação</td><td><code>core.toast('Mensagem', 'success')</code></td></tr><tr><td><code>core.getConfig()</code></td><td>Obtém configuração</td><td><code>core.getConfig('app.name')</code></td></tr></tbody></table></div><h3>Utilitários</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// Validação
+helpers.validateEmail('test@example.com');
+helpers.validatePhone('(11) 99999-9999');
+
+// Formatação
+helpers.formatCurrency(1234.56);
+helpers.formatDate(new Date());
+
+// Storage
+helpers.setStorage('key', 'value');
+helpers.getStorage('key');</code></pre></div></section><section id=examples class=mb-5><h2 class="border-bottom pb-3 mb-4">7. Exemplos</h2><h3>Exemplo Completo</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// index.html
+&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;MSoft Framework&lt;/title&gt;
+    &lt;link href="assets/css/style.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div data-component="header"&gt;&lt;/div&gt;
+    
+    &lt;main id="root"&gt;
+        &lt;div data-component="skeleton"&gt;&lt;/div&gt;
+    &lt;/main&gt;
+    
+    &lt;div data-component="footer"&gt;&lt;/div&gt;
+    
+    &lt;script src="config/config.js"&gt;&lt;/script&gt;
+    &lt;script src="core/core.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+        const app = new MSoft(config);
+        app.init();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div><h3>Componente com Interatividade</h3><div class="bg-dark text-light p-3 rounded mb-3"><pre><code>// components/counter.html
+&lt;div class="card"&gt;
+    &lt;div class="card-body text-center"&gt;
+        &lt;h3&gt;Contador: &lt;span id="counter"&gt;0&lt;/span&gt;&lt;/h3&gt;
+        &lt;button class="btn btn-primary" onclick="increment()"&gt;+1&lt;/button&gt;
+        &lt;button class="btn btn-secondary" onclick="decrement()"&gt;-1&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+let count = 0;
+
+function increment() {
+    count++;
+    updateDisplay();
+}
+
+function decrement() {
+    count--;
+    updateDisplay();
+}
+
+function updateDisplay() {
+    document.getElementById('counter').textContent = count;
+}
+&lt;/script&gt;</code></pre></div></section></div></div></div><style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.sticky-top {
+    z-index: 1020;
+}
+
+.nav-link {
+    color: #6c757d;
+    border-left: 3px solid transparent;
+    padding: 0.5rem 1rem;
+}
+
+.nav-link:hover {
+    color: #495057;
+    background-color: #f8f9fa;
+    border-left-color: #007bff;
+}
+
+.nav-link.active {
+    color: #007bff;
+    background-color: #e7f3ff;
+    border-left-color: #007bff;
+}
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+}
+</style><script>
+// Highlight active section in navigation
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    window.addEventListener('scroll', () => {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (scrollY >= (sectionTop - 200)) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    });
+});
+</script> 

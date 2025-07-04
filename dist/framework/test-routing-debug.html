@@ -1,0 +1,315 @@
+<!DOCTYPE html><html lang=pt-BR><head><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>Debug de Roteamento - MSoft Framework</title><style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .debug-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .warning {
+            color: #ffc107;
+        }
+        .info {
+            color: #17a2b8;
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+        .test-result.success {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        .test-result.error {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+        .test-result.warning {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+        }
+        .test-result.info {
+            background-color: #d1ecf1;
+            border-color: #17a2b8;
+        }
+    </style></head><body><div class=debug-container><h1>🐛 Debug de Roteamento em Subpastas</h1><p>Este arquivo testa e debuga o sistema de roteamento para identificar problemas com caminhos absolutos.</p><div class=debug-container><h3>Informações do Ambiente</h3><div id=environment-info></div></div><div class=debug-container><h3>Testes de Roteamento</h3><button class=test-button onclick=testHelpersAvailability()>Testar Disponibilidade do Helpers</button><button class=test-button onclick=testBasePathDetection()>Testar Detecção de Base Path</button><button class=test-button onclick=testPathResolution()>Testar Resolução de Caminhos</button><button class=test-button onclick=testPageLoading()>Testar Carregamento de Páginas</button><button class=test-button onclick=testComponentLoading()>Testar Carregamento de Componentes</button><button class=test-button onclick=runAllTests()>Executar Todos os Testes</button></div><div class=debug-container><h3>Resultados dos Testes</h3><div id=test-results></div></div><div class=debug-container><h3>Log de Debug</h3><div id=debug-log class=debug-log></div><button class=test-button onclick=clearLog()>Limpar Log</button></div></div><script>
+        // Simula o objeto Helpers para teste
+        const TestHelpers = {
+            getBasePath() {
+                const pathname = window.location.pathname;
+                const segments = pathname.split('/').filter(segment => segment !== '');
+                
+                logDebug('[TestHelpers] getBasePath - pathname:', pathname);
+                logDebug('[TestHelpers] getBasePath - segments:', segments);
+                
+                if (segments.length === 0) {
+                    logDebug('[TestHelpers] getBasePath - retornando raiz (vazio)');
+                    return '';
+                }
+                
+                const lastSegment = segments[segments.length - 1];
+                if (lastSegment && lastSegment.includes('.')) {
+                    segments.pop();
+                    logDebug('[TestHelpers] getBasePath - removido arquivo:', lastSegment);
+                }
+                
+                if (segments.length > 0) {
+                    const basePath = `/${segments.join('/')}`;
+                    logDebug('[TestHelpers] getBasePath - retornando basePath:', basePath);
+                    return basePath;
+                }
+                
+                logDebug('[TestHelpers] getBasePath - retornando vazio (após processamento)');
+                return '';
+            },
+            
+            resolvePath(path) {
+                if (!path || typeof path !== 'string') {
+                    logDebug('[TestHelpers] resolvePath - path inválido:', path);
+                    return '';
+                }
+                
+                const basePath = this.getBasePath();
+                logDebug('[TestHelpers] resolvePath - path:', path);
+                logDebug('[TestHelpers] resolvePath - basePath:', basePath);
+                
+                if (path.startsWith('/')) {
+                    const resolved = `${basePath}${path}`;
+                    logDebug('[TestHelpers] resolvePath - caminho absoluto resolvido:', resolved);
+                    return resolved;
+                }
+                
+                const resolved = `${basePath}/${path}`;
+                logDebug('[TestHelpers] resolvePath - caminho relativo resolvido:', resolved);
+                return resolved;
+            }
+        };
+
+        function logDebug(message, data = null) {
+            const logDiv = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            
+            if (data) {
+                logEntry.innerHTML = `<span class="info">[${timestamp}]</span> ${message} <span class="warning">${JSON.stringify(data)}</span>`;
+            } else {
+                logEntry.innerHTML = `<span class="info">[${timestamp}]</span> ${message}`;
+            }
+            
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function addTestResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.innerHTML = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        function clearLog() {
+            document.getElementById('debug-log').innerHTML = '';
+        }
+
+        function showEnvironmentInfo() {
+            const envDiv = document.getElementById('environment-info');
+            envDiv.innerHTML = `
+                <p><strong>URL atual:</strong> ${window.location.href}</p>
+                <p><strong>Pathname:</strong> ${window.location.pathname}</p>
+                <p><strong>Origin:</strong> ${window.location.origin}</p>
+                <p><strong>Base Path (TestHelpers):</strong> ${TestHelpers.getBasePath() || '(raiz)'}</p>
+                <p><strong>Base Path (window.Helpers):</strong> ${window.Helpers?.getBasePath() || '(não disponível)'}</p>
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+            `;
+        }
+
+        function testHelpersAvailability() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Disponibilidade do Helpers</strong>', 'info');
+            
+            if (window.Helpers) {
+                addTestResult('✅ window.Helpers está disponível', 'success');
+                addTestResult(`✅ getBasePath() disponível: ${typeof window.Helpers.getBasePath}`, 'success');
+                addTestResult(`✅ resolvePath() disponível: ${typeof window.Helpers.resolvePath}`, 'success');
+            } else {
+                addTestResult('❌ window.Helpers não está disponível', 'error');
+            }
+            
+            if (window.core) {
+                addTestResult('✅ window.core está disponível', 'success');
+                if (window.core.helpers) {
+                    addTestResult('✅ window.core.helpers está disponível', 'success');
+                } else {
+                    addTestResult('⚠️ window.core.helpers não está disponível', 'warning');
+                }
+            } else {
+                addTestResult('❌ window.core não está disponível', 'error');
+            }
+        }
+
+        function testBasePathDetection() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Detecção de Base Path</strong>', 'info');
+            
+            const testCases = [
+                { pathname: '/', expected: '' },
+                { pathname: '/docs/', expected: '/docs' },
+                { pathname: '/docs/index.html', expected: '/docs' },
+                { pathname: '/msoft-site/', expected: '/msoft-site' },
+                { pathname: '/msoft-site/index.html', expected: '/msoft-site' },
+                { pathname: '/subfolder/page.html', expected: '/subfolder' }
+            ];
+            
+            testCases.forEach(testCase => {
+                // Simula o pathname
+                const originalPathname = window.location.pathname;
+                Object.defineProperty(window.location, 'pathname', {
+                    value: testCase.pathname,
+                    writable: true
+                });
+                
+                const result = TestHelpers.getBasePath();
+                const passed = result === testCase.expected;
+                
+                addTestResult(
+                    `${passed ? '✅' : '❌'} ${testCase.pathname} → ${result} (esperado: ${testCase.expected})`,
+                    passed ? 'success' : 'error'
+                );
+                
+                // Restaura o pathname original
+                Object.defineProperty(window.location, 'pathname', {
+                    value: originalPathname,
+                    writable: true
+                });
+            });
+        }
+
+        function testPathResolution() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Resolução de Caminhos</strong>', 'info');
+            
+            const testPaths = [
+                'src/pages/home.html',
+                'src/components/header.html',
+                'assets/css/style.css',
+                '/src/pages/about.html',
+                'assets/vendor/css/bootstrap.min.css'
+            ];
+            
+            testPaths.forEach(path => {
+                const resolved = TestHelpers.resolvePath(path);
+                addTestResult(`<strong>${path}</strong> → <code>${resolved}</code>`, 'info');
+            });
+        }
+
+        async function testPageLoading() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Carregamento de Páginas</strong>', 'info');
+            
+            const testPages = ['home', 'about', '404'];
+            
+            for (const page of testPages) {
+                try {
+                    const path = TestHelpers.resolvePath(`src/pages/${page}.html`);
+                    logDebug(`[Test] Tentando carregar página: ${path}`);
+                    
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        addTestResult(`✅ ${page}.html carregado com sucesso (${response.status})`, 'success');
+                    } else {
+                        addTestResult(`❌ ${page}.html falhou (${response.status})`, 'error');
+                    }
+                } catch (error) {
+                    addTestResult(`❌ ${page}.html erro: ${error.message}`, 'error');
+                    logDebug(`[Test] Erro ao carregar ${page}.html:`, error);
+                }
+            }
+        }
+
+        async function testComponentLoading() {
+            clearResults();
+            addTestResult('<strong>🧪 Testando Carregamento de Componentes</strong>', 'info');
+            
+            const testComponents = ['header', 'footer', 'modal'];
+            
+            for (const component of testComponents) {
+                try {
+                    const path = TestHelpers.resolvePath(`src/components/${component}.html`);
+                    logDebug(`[Test] Tentando carregar componente: ${path}`);
+                    
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        addTestResult(`✅ ${component}.html carregado com sucesso (${response.status})`, 'success');
+                    } else {
+                        addTestResult(`❌ ${component}.html falhou (${response.status})`, 'error');
+                    }
+                } catch (error) {
+                    addTestResult(`❌ ${component}.html erro: ${error.message}`, 'error');
+                    logDebug(`[Test] Erro ao carregar ${component}.html:`, error);
+                }
+            }
+        }
+
+        function runAllTests() {
+            clearResults();
+            addTestResult('<strong>🚀 Executando Todos os Testes</strong>', 'info');
+            
+            setTimeout(() => testHelpersAvailability(), 100);
+            setTimeout(() => testBasePathDetection(), 200);
+            setTimeout(() => testPathResolution(), 300);
+            setTimeout(() => testPageLoading(), 400);
+            setTimeout(() => testComponentLoading(), 500);
+        }
+
+        // Inicializa informações do ambiente
+        showEnvironmentInfo();
+        
+        // Executa teste inicial
+        setTimeout(() => {
+            addTestResult('<strong>🎯 Debug Inicializado</strong>', 'success');
+            addTestResult('Execute os testes acima para verificar o funcionamento do roteamento.', 'info');
+        }, 500);
+    </script></body></html> 
