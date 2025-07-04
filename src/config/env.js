@@ -84,7 +84,7 @@ class EnvironmentConfig {
       LOG_ENDPOINT: '',
       VAPID_PUBLIC_KEY: '',
       BUILD_NUMBER: 'dev',
-      BASE_PATH: '/$SUBPASTA'
+      BASE_PATH: ''
     };
 
     // Aplica defaults apenas se a variável não existir
