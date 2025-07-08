@@ -55,7 +55,7 @@ class DebugManager {
    * @param {any} data - Dados adicionais
    */
   log(message, data = null) {
-    if (this.isDebugEnabled) {
+    if (this && this.isDebugEnabled) {
       if (data) {
         this.originalConsole.log(`[DEBUG] ${message}`, data);
       } else {
@@ -70,7 +70,7 @@ class DebugManager {
    * @param {any} data - Dados adicionais
    */
   warn(message, data = null) {
-    if (this.isDebugEnabled) {
+    if (this && this.isDebugEnabled) {
       if (data) {
         this.originalConsole.warn(`[DEBUG] ${message}`, data);
       } else {
@@ -85,11 +85,26 @@ class DebugManager {
    * @param {any} data - Dados adicionais
    */
   info(message, data = null) {
-    if (this.isDebugEnabled) {
+    if (this && this.isDebugEnabled) {
       if (data) {
         this.originalConsole.info(`[DEBUG] ${message}`, data);
       } else {
         this.originalConsole.info(`[DEBUG] ${message}`);
+      }
+    }
+  }
+
+  /**
+   * Função de error que só funciona quando debug está habilitado
+   * @param {string} message - Mensagem para error
+   * @param {any} data - Dados adicionais
+   */
+  error(message, data = null) {
+    if (this && this.isDebugEnabled) {
+      if (data) {
+        this.originalConsole.error(`[DEBUG] ${message}`, data);
+      } else {
+        this.originalConsole.error(`[DEBUG] ${message}`);
       }
     }
   }
@@ -141,6 +156,20 @@ class DebugManager {
 
 // Instância global
 window.Debug = new DebugManager();
+
+// Verificação de segurança para garantir que o Debug está disponível
+if (!window.Debug || !window.Debug.isDebugEnabled) {
+  // Fallback para console normal se o Debug não estiver disponível
+  window.Debug = {
+    log: console.log.bind(console),
+    warn: console.warn.bind(console),
+    error: console.error.bind(console),
+    info: console.info.bind(console),
+    isDebugEnabled: false,
+    enable: function() { this.isDebugEnabled = true; },
+    disable: function() { this.isDebugEnabled = false; }
+  };
+}
 
 // Exporta para uso em módulos
 if (typeof module !== 'undefined' && module.exports) {

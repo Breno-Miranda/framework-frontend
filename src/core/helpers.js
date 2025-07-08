@@ -199,7 +199,26 @@ const Helpers = {
   },
 
   slugify(text) {
-    return text.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    if (!text || typeof text !== 'string') {
+      return '';
+    }
+    
+    return text
+      // Converte para minúsculas
+      .toLowerCase()
+      // Remove acentos
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      // Remove caracteres especiais (mantém apenas letras, números e espaços)
+      .replace(/[^a-z0-9\s]/g, '')
+      // Remove espaços extras no início e fim
+      .trim()
+      // Substitui espaços por hífens
+      .replace(/\s+/g, '-')
+      // Remove hífens duplicados
+      .replace(/-+/g, '-')
+      // Remove hífens no início e fim
+      .replace(/^-+|-+$/g, '');
   }
 };
 

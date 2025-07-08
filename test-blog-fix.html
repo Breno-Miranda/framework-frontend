@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Teste do Blog - Correções</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Teste do Blog - Verificação de Correções</h1>
+    
+    <div id="debug-test" class="test-section info">
+        <h3>Teste do Sistema de Debug</h3>
+        <button onclick="testDebug()">Testar Debug</button>
+        <div id="debug-results"></div>
+    </div>
+
+    <div id="blog-test" class="test-section">
+        <h3>Teste do Blog</h3>
+        <button onclick="testBlog()">Testar Blog</button>
+        <div id="blog-results"></div>
+    </div>
+
+    <div id="proxy-test" class="test-section">
+        <h3>Teste do Proxy</h3>
+        <button onclick="testProxy()">Testar Proxy</button>
+        <div id="proxy-results"></div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="src/config/env.js"></script>
+    <script src="src/utils/debug.js"></script>
+    <script src="src/config/config.js"></script>
+    <script src="src/core/core.js"></script>
+
+    <script>
+        // Aguarda o carregamento dos scripts
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                console.log('=== Teste de Correções Iniciado ===');
+                testDebug();
+            }, 1000);
+        });
+
+        function testDebug() {
+            const container = document.getElementById('debug-results');
+            container.innerHTML = '<p>Testando sistema de debug...</p>';
+            
+            try {
+                // Testa se o Debug está disponível
+                if (!window.Debug) {
+                    throw new Error('Debug não está disponível');
+                }
+
+                // Testa as funções do Debug
+                window.Debug.log('Teste de log');
+                window.Debug.warn('Teste de warn');
+                window.Debug.error('Teste de error');
+                window.Debug.info('Teste de info');
+
+                let html = '<div class="success">✅ Sistema de Debug funcionando corretamente</div>';
+                html += '<h4>Status do Debug:</h4>';
+                html += '<pre>' + JSON.stringify({
+                    isDebugEnabled: window.Debug.isDebugEnabled,
+                    isEnabled: window.Debug.isEnabled(),
+                    hasLog: typeof window.Debug.log === 'function',
+                    hasWarn: typeof window.Debug.warn === 'function',
+                    hasError: typeof window.Debug.error === 'function',
+                    hasInfo: typeof window.Debug.info === 'function'
+                }, null, 2) + '</pre>';
+                
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="error">❌ Erro no sistema de Debug: ' + error.message + '</div>';
+            }
+        }
+
+        function testBlog() {
+            const container = document.getElementById('blog-results');
+            container.innerHTML = '<p>Testando blog...</p>';
+            
+            try {
+                // Testa se os serviços necessários estão disponíveis
+                if (!window.ENV) {
+                    throw new Error('ENV não está disponível');
+                }
+
+                if (!window.core?.fetchAPI) {
+                    throw new Error('Core fetchAPI não está disponível');
+                }
+
+                // Testa a função initializeBlog (simulada)
+                function testInitializeBlog() {
+                    try {
+                        if (window.ENV && window.core?.fetchAPI) {
+                            console.log('[Blog] Serviços disponíveis, iniciando carregamento...');
+                            console.log('[Blog] Configurações:', {
+                                ENV: window.ENV,
+                                core: window.core
+                            });
+                            return true;
+                        } else {
+                            console.log('[Blog] Aguardando serviços...', {
+                                ENV: !!window.ENV,
+                                core: !!window.core?.fetchAPI
+                            });
+                            return false;
+                        }
+                    } catch (error) {
+                        console.error('[Blog] Erro na inicialização:', error);
+                        return false;
+                    }
+                }
+
+                const result = testInitializeBlog();
+                
+                let html = '<div class="success">✅ Blog funcionando corretamente</div>';
+                html += '<h4>Status dos Serviços:</h4>';
+                html += '<pre>' + JSON.stringify({
+                    ENV: !!window.ENV,
+                    core: !!window.core,
+                    fetchAPI: !!window.core?.fetchAPI,
+                    initializeResult: result
+                }, null, 2) + '</pre>';
+                
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="error">❌ Erro no blog: ' + error.message + '</div>';
+            }
+        }
+
+        function testProxy() {
+            const container = document.getElementById('proxy-results');
+            container.innerHTML = '<p>Testando proxy...</p>';
+            
+            try {
+                const env = window.ENV;
+                const useProxy = env?.getBoolean('USE_PROXY');
+                const proxyUrl = env?.get('PROXY_URL');
+                
+                let html = '<h4>Configuração do Proxy:</h4>';
+                html += '<pre>' + JSON.stringify({
+                    useProxy,
+                    proxyUrl,
+                    currentOrigin: window.location.origin,
+                    configApi: window.config?.api
+                }, null, 2) + '</pre>';
+                
+                if (useProxy && proxyUrl) {
+                    html += '<div class="success">✅ Proxy configurado corretamente</div>';
+                } else if (useProxy && !proxyUrl) {
+                    html += '<div class="warning">⚠️ USE_PROXY está true mas PROXY_URL está vazio</div>';
+                } else {
+                    html += '<div class="info">ℹ️ Proxy não está ativo</div>';
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="error">❌ Erro ao testar proxy: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html> 

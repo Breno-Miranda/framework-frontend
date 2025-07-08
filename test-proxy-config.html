@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Teste de Configuração do Proxy</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Configuração do Proxy</h1>
+    
+    <div id="config-info" class="test-section info">
+        <h3>Informações de Configuração</h3>
+        <div id="config-details"></div>
+    </div>
+
+    <div id="env-test" class="test-section">
+        <h3>Teste de Variáveis de Ambiente</h3>
+        <div id="env-details"></div>
+    </div>
+
+    <div id="proxy-test" class="test-section">
+        <h3>Teste de Proxy</h3>
+        <button onclick="testProxy()">Testar Proxy</button>
+        <div id="proxy-results"></div>
+    </div>
+
+    <div id="api-test" class="test-section">
+        <h3>Teste de API</h3>
+        <button onclick="testAPI()">Testar API</button>
+        <div id="api-results"></div>
+    </div>
+
+    <div id="direct-test" class="test-section">
+        <h3>Teste Direto (sem proxy)</h3>
+        <button onclick="testDirect()">Testar Chamada Direta</button>
+        <div id="direct-results"></div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="src/config/env.js"></script>
+    <script src="src/utils/debug.js"></script>
+    <script src="src/config/config.js"></script>
+    <script src="src/core/core.js"></script>
+
+    <script>
+        // Aguarda o carregamento dos scripts
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showConfigInfo();
+                showEnvInfo();
+            }, 1000);
+        });
+
+        function showConfigInfo() {
+            const container = document.getElementById('config-details');
+            const config = window.config;
+            
+            let html = '<h4>Configurações do Sistema:</h4>';
+            html += '<pre>' + JSON.stringify({
+                app: config?.app,
+                api: config?.api,
+                basePath: config?.basePath?.getCurrent()
+            }, null, 2) + '</pre>';
+            
+            html += '<h4>Core disponível:</h4>';
+            html += '<pre>' + JSON.stringify({
+                core: !!window.core,
+                fetchAPI: !!window.core?.fetchAPI,
+                ENV: !!window.ENV
+            }, null, 2) + '</pre>';
+            
+            container.innerHTML = html;
+        }
+
+        function showEnvInfo() {
+            const container = document.getElementById('env-details');
+            const env = window.ENV;
+            
+            if (!env) {
+                container.innerHTML = '<div class="error">ENV não está disponível</div>';
+                return;
+            }
+            
+            let html = '<h4>Variáveis de Ambiente:</h4>';
+            html += '<pre>' + JSON.stringify({
+                NODE_ENV: env.get('NODE_ENV'),
+                API_BASE_URL: env.get('API_BASE_URL'),
+                USE_PROXY: env.getBoolean('USE_PROXY'),
+                PROXY_URL: env.get('PROXY_URL'),
+                TOKEN: env.get('TOKEN'),
+                BASE_PATH: env.get('BASE_PATH')
+            }, null, 2) + '</pre>';
+            
+            container.innerHTML = html;
+        }
+
+        async function testProxy() {
+            const container = document.getElementById('proxy-results');
+            container.innerHTML = '<p>Testando proxy...</p>';
+            
+            try {
+                const env = window.ENV;
+                const useProxy = env?.getBoolean('USE_PROXY');
+                const proxyUrl = env?.get('PROXY_URL');
+                
+                let html = '<h4>Configuração do Proxy:</h4>';
+                html += '<pre>' + JSON.stringify({
+                    useProxy,
+                    proxyUrl,
+                    currentOrigin: window.location.origin
+                }, null, 2) + '</pre>';
+                
+                if (useProxy && proxyUrl) {
+                    html += '<div class="success">Proxy está configurado</div>';
+                } else if (useProxy && !proxyUrl) {
+                    html += '<div class="warning">USE_PROXY está true mas PROXY_URL está vazio</div>';
+                } else {
+                    html += '<div class="info">Proxy não está ativo</div>';
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="error">Erro ao testar proxy: ' + error.message + '</div>';
+            }
+        }
+
+        async function testAPI() {
+            const container = document.getElementById('api-results');
+            container.innerHTML = '<p>Testando API...</p>';
+            
+            try {
+                if (!window.core?.fetchAPI) {
+                    container.innerHTML = '<div class="error">Core fetchAPI não está disponível</div>';
+                    return;
+                }
+                
+                const url = '/api/pages?populate=*&filters[active]=true&filters[token_app]=V1HR8Pj12HC3qsi1WgYQkfO5c8BKH&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=1';
+                
+                console.log('Testando API com URL:', url);
+                
+                const response = await window.core.fetchAPI(url, 'GET');
+                
+                let html = '<h4>Resposta da API:</h4>';
+                html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+                html += '<div class="success">API funcionou corretamente!</div>';
+                
+                container.innerHTML = html;
+            } catch (error) {
+                let html = '<h4>Erro na API:</h4>';
+                html += '<div class="error">' + error.message + '</div>';
+                html += '<pre>' + error.stack + '</pre>';
+                
+                container.innerHTML = html;
+            }
+        }
+
+        async function testDirect() {
+            const container = document.getElementById('direct-results');
+            container.innerHTML = '<p>Testando chamada direta...</p>';
+            
+            try {
+                const url = 'https://cms.mirandasoft.com.br/api/pages?populate=*&filters[active]=true&filters[token_app]=V1HR8Pj12HC3qsi1WgYQkfO5c8BKH&sort=createdAt:desc&pagination[page]=1&pagination[pageSize]=1';
+                
+                console.log('Testando chamada direta com URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                let html = '<h4>Resposta da Chamada Direta:</h4>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '<div class="success">Chamada direta funcionou!</div>';
+                
+                container.innerHTML = html;
+            } catch (error) {
+                let html = '<h4>Erro na Chamada Direta:</h4>';
+                html += '<div class="error">' + error.message + '</div>';
+                
+                if (error.message.includes('CORS')) {
+                    html += '<div class="warning">Este é um erro de CORS - o proxy deve resolver isso</div>';
+                }
+                
+                container.innerHTML = html;
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Slugify</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .step { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+        .result { font-family: monospace; color: #0066cc; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Debug Slugify</h1>
+    <div id="debug-output"></div>
+
+    <script src="src/config/config.js"></script>
+    <script src="src/core/helpers.js"></script>
+    <script>
+        function debugSlugify(text) {
+            const output = document.getElementById('debug-output');
+            let html = `<h2>Debug: "${text}"</h2>`;
+            
+            // Simula cada passo do slugify
+            let step1 = text.toLowerCase();
+            html += `<div class="step">1. toLowerCase(): <span class="result">"${step1}"</span></div>`;
+            
+            let step2 = step1.normalize('NFD');
+            html += `<div class="step">2. normalize('NFD'): <span class="result">"${step2}"</span></div>`;
+            
+            let step3 = step2.replace(/[\u0300-\u036f]/g, '');
+            html += `<div class="step">3. remove acentos: <span class="result">"${step3}"</span></div>`;
+            
+            let step4 = step3.replace(/[^a-z0-9\s]/g, '');
+            html += `<div class="step">4. remove caracteres especiais: <span class="result">"${step4}"</span></div>`;
+            
+            let step5 = step4.replace(/\s+/g, '-');
+            html += `<div class="step">5. espaços para hífens: <span class="result">"${step5}"</span></div>`;
+            
+            let step6 = step5.replace(/-+/g, '-');
+            html += `<div class="step">6. remove hífens duplicados: <span class="result">"${step6}"</span></div>`;
+            
+            let step7 = step6.replace(/^-+|-+$/g, '');
+            html += `<div class="step">7. remove hífens início/fim: <span class="result">"${step7}"</span></div>`;
+            
+            // Resultado final
+            const finalResult = window.Helpers.slugify(text);
+            html += `<div class="step"><strong>Resultado final: <span class="result">"${finalResult}"</span></strong></div>`;
+            
+            // Verifica se tem hífen no final
+            if (finalResult.endsWith('-')) {
+                html += `<div class="error">❌ PROBLEMA: Ainda tem hífen no final!</div>`;
+            } else {
+                html += `<div style="color: green;">✅ OK: Sem hífen no final</div>`;
+            }
+            
+            output.innerHTML = html;
+        }
+
+        // Testa o caso específico
+        document.addEventListener('DOMContentLoaded', () => {
+            debugSlugify("Por que a MSoft criou um framework?");
+        });
+    </script>
+</body>
+</html> 

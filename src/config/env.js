@@ -51,7 +51,7 @@ class EnvironmentConfig {
       const value = meta.getAttribute('content');
       this.env[name] = value;
     });
-  }
+  } 
 
   /**
    * Carrega variáveis do localStorage
@@ -73,10 +73,10 @@ class EnvironmentConfig {
    */
   setDefaults() {
     const defaults = {
-      NODE_ENV: 'development',
-      API_BASE_URL: 'http://localhost:3003',
-      USE_PROXY: 'false',
-      PROXY_URL: '',
+      NODE_ENV: 'production',
+      API_BASE_URL: window.location.origin,
+      USE_PROXY: 'true',
+      PROXY_URL: window.location.origin, // Configura o proxy para usar a origem atual
       ANALYTICS_ENABLED: 'false',
       GA_TRACKING_ID: '',
       FB_PIXEL_ID: '',
@@ -84,7 +84,10 @@ class EnvironmentConfig {
       LOG_ENDPOINT: '',
       VAPID_PUBLIC_KEY: '',
       BUILD_NUMBER: 'dev',
-      BASE_PATH: ''
+      TOKEN: 'V1HR8Pj12HC3qsi1WgYQkfO5c8BKH',
+      BASE_PATH: '',
+      CORS_ENABLED: 'true',
+      API_TIMEOUT: '30000'
     };
 
     // Aplica defaults apenas se a variável não existir
