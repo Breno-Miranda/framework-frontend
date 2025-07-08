@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Slugify Simples</title>
+</head>
+<body>
+    <h1>Teste Slugify</h1>
+    <div id="result"></div>
+
+    <script src="src/config/config.js"></script>
+    <script src="src/core/helpers.js"></script>
+    <script>
+        const testText = "Por que a MSoft criou um framework?";
+        const result = window.Helpers.slugify(testText);
+        
+        document.getElementById('result').innerHTML = `
+            <p><strong>Texto original:</strong> "${testText}"</p>
+            <p><strong>Resultado:</strong> "${result}"</p>
+            <p><strong>Tem hífen no final?</strong> ${result.endsWith('-') ? 'SIM ❌' : 'NÃO ✅'}</p>
+            <p><strong>Comprimento:</strong> ${result.length}</p>
+            <p><strong>Último caractere:</strong> "${result.charAt(result.length - 1)}"</p>
+        `;
+        
+        console.log('Teste:', testText);
+        console.log('Resultado:', result);
+        console.log('Tem hífen no final:', result.endsWith('-'));
+    </script>
+</body>
+</html> 

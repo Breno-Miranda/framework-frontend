@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Slugify</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-case {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .original {
+            font-weight: bold;
+            color: #333;
+        }
+        .result {
+            color: #0066cc;
+            font-family: monospace;
+            background: #f5f5f5;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .error {
+            color: #cc0000;
+            background: #ffe6e6;
+            padding: 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste do Método Slugify</h1>
+    <p>Verificando se o slugify está funcionando corretamente sem deixar hífens no final.</p>
+    
+    <div id="test-results"></div>
+
+    <script src="src/config/config.js"></script>
+    <script src="src/core/helpers.js"></script>
+    <script>
+        // Casos de teste que podem causar problemas com hífens no final
+        const testCases = [
+            "Por que a MSoft criou um framework?",
+            "Framework da MSoft!",
+            "MSoft & Framework",
+            "MSoft Framework...",
+            "MSoft Framework!!!",
+            "MSoft Framework---",
+            "MSoft Framework   ",
+            "   MSoft Framework",
+            "MSoft Framework com caracteres especiais @#$%",
+            "MSoft Framework com acentos: çãõéíóú",
+            "MSoft Framework com números 123",
+            "MSoft-Framework",
+            "MSoft_Framework",
+            "MSoft Framework (com parênteses)",
+            "MSoft Framework [com colchetes]",
+            "MSoft Framework {com chaves}",
+            "MSoft Framework <com tags>",
+            "MSoft Framework \"com aspas\"",
+            "MSoft Framework 'com aspas simples'",
+            "MSoft Framework | com pipe",
+            "MSoft Framework \\ com barra",
+            "MSoft Framework / com barra",
+            "MSoft Framework ? com interrogação",
+            "MSoft Framework ! com exclamação",
+            "MSoft Framework . com ponto",
+            "MSoft Framework , com vírgula",
+            "MSoft Framework ; com ponto e vírgula",
+            "MSoft Framework : com dois pontos",
+            "MSoft Framework - com hífen",
+            "MSoft Framework _ com underscore",
+            "MSoft Framework + com mais",
+            "MSoft Framework = com igual",
+            "MSoft Framework # com hashtag",
+            "MSoft Framework $ com cifrão",
+            "MSoft Framework % com percentual",
+            "MSoft Framework & com e comercial",
+            "MSoft Framework * com asterisco",
+            "MSoft Framework ~ com til",
+            "MSoft Framework ` com crase",
+            "MSoft Framework ^ com circunflexo",
+            "MSoft Framework @ com arroba",
+            "MSoft Framework !!!",
+            "MSoft Framework ???",
+            "MSoft Framework ...",
+            "MSoft Framework ---",
+            "MSoft Framework ___",
+            "MSoft Framework +++",
+            "MSoft Framework ===",
+            "MSoft Framework ###",
+            "MSoft Framework $$$",
+            "MSoft Framework %%%",
+            "MSoft Framework &&&",
+            "MSoft Framework ***",
+            "MSoft Framework ~~~",
+            "MSoft Framework ```",
+            "MSoft Framework ^^^",
+            "MSoft Framework @@@"
+        ];
+
+        function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            testCases.forEach((testCase, index) => {
+                const result = window.Helpers.slugify(testCase);
+                const hasTrailingHyphen = result.endsWith('-');
+                const hasLeadingHyphen = result.startsWith('-');
+                const hasMultipleHyphens = result.includes('--');
+                
+                html += `
+                    <div class="test-case">
+                        <div class="original">Teste ${index + 1}: "${testCase}"</div>
+                        <div class="result">Resultado: "${result}"</div>
+                        ${hasTrailingHyphen ? '<div class="error">❌ ERRO: Tem hífen no final!</div>' : ''}
+                        ${hasLeadingHyphen ? '<div class="error">❌ ERRO: Tem hífen no início!</div>' : ''}
+                        ${hasMultipleHyphens ? '<div class="error">❌ ERRO: Tem hífens duplicados!</div>' : ''}
+                        ${!hasTrailingHyphen && !hasLeadingHyphen && !hasMultipleHyphens ? '<div style="color: green;">✅ OK</div>' : ''}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Executa os testes quando a página carregar
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html> 

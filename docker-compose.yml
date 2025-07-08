@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  msoft-site:
+    build: .
+    ports:
+      - "80:80"
+    container_name: msoft-site
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Volume para logs do Nginx
+      - nginx-logs:/var/log/nginx
+      # Volume para permitir alterações em tempo real
+      - .:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - msoft-network
+
+volumes:
+  nginx-logs:
+
+networks:
+  msoft-network:
+    driver: bridge 

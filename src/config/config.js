@@ -12,7 +12,8 @@ const config = {
     debug: window.ENV?.getBoolean('DEBUG') || false,
     build: window.ENV?.get('BUILD_NUMBER') || "dev",
     language: "pt-BR",
-    timezone: "America/Sao_Paulo"
+    timezone: "America/Sao_Paulo",
+    token: window.ENV?.get('TOKEN') || "",
   },
 
   // Configurações de Caminho Base
@@ -95,7 +96,7 @@ const config = {
 
   // Configurações da API
   api: {
-    baseUrl: window.ENV?.get('API_BASE_URL') || "http://localhost:3003",
+    baseUrl: window.location.origin,
     timeout: 30000,
     retryAttempts: 3,
     retryDelay: 1000,
@@ -106,7 +107,12 @@ const config = {
       auth: "/auth",
       users: "/users",
       posts: "/posts",
-      upload: "/upload"
+      upload: "/upload",
+      // Endpoints da API
+      pages: "/api/pages",
+      posts: "/api/posts",
+      categories: "/api/categories",
+      media: "/api/upload/files"
     },
     headers: {
       "Content-Type": "application/json",
@@ -119,7 +125,25 @@ const config = {
     defaultPage: "home",
     page404: "404",
     validPages: [
+      // Páginas principais
       'home', 
+      'servicos',
+      'blog',
+      'sobre',
+      'contato',
+      'orcamento',
+      
+      // Páginas legais
+      'termos',
+      'privacidade',
+      'cookies',
+      'lgpd',
+      
+      // Páginas de redirecionamento (mantidas para compatibilidade)
+      'about',
+      'contact',
+      
+      // Páginas técnicas (mantidas do framework original)
       'framework',
       'docs',
       'examples',
@@ -128,15 +152,13 @@ const config = {
       'blogs',
       'blog-custom',
       'games',
-      'about',
-      'contact',
       'materials',
       'privacy',
       'terms',
-      'lgpd', 
-      'cookies',
       'faq',
-      '404'
+      '404',
+      'cms-example',
+      'test-script'
     ],
     // Configurações de navegação
     navigation: {
@@ -448,7 +470,7 @@ const config = {
 const environmentConfigs = {
   development: {
     api: {
-      baseUrl: "http://localhost:3003",
+      baseUrl: window.ENV?.get('API_BASE_URL'),
       debug: true
     },
     logging: {
@@ -460,7 +482,7 @@ const environmentConfigs = {
   },
   staging: {
     api: {
-      baseUrl: "https://staging-api.msoft.com.br",
+      baseUrl: window.ENV?.get('API_BASE_URL'),
       debug: false
     },
     logging: {
@@ -472,7 +494,7 @@ const environmentConfigs = {
   },
   production: {
     api: {
-      baseUrl: "https://api.msoft.com.br",
+      baseUrl: window.ENV?.get('API_BASE_URL'),
       debug: false
     },
     logging: {

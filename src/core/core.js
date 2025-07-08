@@ -224,6 +224,90 @@ class Core {
     return true;
   }
 
+
+
+  /**
+   * Modifica código JavaScript para evitar conflitos
+   * @param {string} code - Código JavaScript original
+   * @returns {string} - Código modificado
+   */
+  modifyScriptCode(code) {
+    let modifiedCode = code;
+    
+    // Lista de variáveis que podem causar conflitos
+    const conflictVars = ['allPages', 'filteredPages', 'categories'];
+    
+    conflictVars.forEach(varName => {
+      // Remove declarações let/const/var da variável
+      const letRegex = new RegExp(`\\blet\\s+${varName}\\b`, 'g');
+      const constRegex = new RegExp(`\\bconst\\s+${varName}\\b`, 'g');
+      const varRegex = new RegExp(`\\bvar\\s+${varName}\\b`, 'g');
+      
+      modifiedCode = modifiedCode.replace(letRegex, `window.${varName}`);
+      modifiedCode = modifiedCode.replace(constRegex, `window.${varName}`);
+      modifiedCode = modifiedCode.replace(varRegex, `window.${varName}`);
+      
+      // Adiciona inicialização se não existir
+      if (!modifiedCode.includes(`window.${varName}`)) {
+        modifiedCode = `window.${varName} = window.${varName} || [];\n${modifiedCode}`;
+      }
+    });
+    
+    return modifiedCode;
+  }
+
+  /**
+   * Executa scripts JavaScript - SOLUÇÃO SEM CONFLITOS
+   * @param {Element} container - Container onde procurar scripts
+   */
+  executeScripts(container) {
+    const scripts = container.querySelectorAll('script');
+    console.log(`[Core] Executando ${scripts.length} scripts...`);
+    
+    // Remove scripts antigos do container antes de executar
+    scripts.forEach(script => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    });
+    
+    scripts.forEach((script, index) => {
+      try {
+        // Script inline - cria elemento script
+        if (script.textContent && script.textContent.trim()) {
+          console.log(`[Core] Executando script #${index + 1}`);
+          
+          const newScript = document.createElement('script');
+          // Modifica o código para evitar conflitos
+          newScript.textContent = this.modifyScriptCode(script.textContent);
+          document.body.appendChild(newScript);
+          
+          // Remove após execução
+          setTimeout(() => {
+            if (newScript.parentNode) {
+              newScript.parentNode.removeChild(newScript);
+            }
+          }, 100);
+        } 
+        // Script externo - carrega
+        else if (script.src) {
+          console.log(`[Core] Carregando script externo: ${script.src}`);
+          const newScript = document.createElement('script');
+          newScript.src = script.src;
+          document.head.appendChild(newScript);
+        }
+      } catch (error) {
+        console.error(`[Core] Erro no script #${index + 1}:`, error);
+      }
+    });
+  }
+
+
+
+
+
+
+
   /**
    * Inicializa todos os [data-component]
    * @param {Element} container - Container onde procurar componentes
@@ -247,11 +331,6 @@ class Core {
       }
 
       try {
-        // Verifica se já foi carregado
-        if (this.loadedHtmlComponents.has(name)) {
-          continue;
-        }
-
         // Tenta carregar componente HTML
         let componentPath;
         
@@ -274,7 +353,9 @@ class Core {
           
           el.innerHTML = html;
           
-          this.loadedHtmlComponents.add(name);
+          // Executa scripts do componente
+          this.executeScripts(el);
+          
           continue;
         } else {
           window.Debug?.warn(`[Core] Falha ao carregar componente HTML: ${name} (${res.status})`);
@@ -392,6 +473,11 @@ class Core {
       // Limpa o conteúdo atual do root
       root.innerHTML = html;
       
+      console.log('[Core] HTML da página carregado, executando scripts...');
+      
+      // Executa scripts JavaScript encontrados no HTML
+      this.executeScripts(root);
+      
       // Inicializa componentes dentro do root
       this.initializeComponents(root);
       
@@ -428,55 +514,66 @@ class Core {
 
     } catch (error) {
       console.error('[Core] Erro ao carregar página:', error);
-      
       // Redireciona para 404
-      try {
-        let errorPath;
-        
-        // Se BASE_PATH está vazio e auto está true, usa caminho absoluto
-        if ((!window.config?.basePath?.base_path || window.config.basePath.base_path === '') && 
-            window.config?.basePath?.auto === true) {
-          errorPath = `/src/pages/404.html`;
-        } else if (window.config?.basePath?.auto === false && window.config?.basePath?.base_path) {
-          // Se auto está false e há BASE_PATH configurado
-          errorPath = `${window.config.basePath.base_path}/src/pages/404.html`;
-        } else {
-          // Usa o resolve padrão
-          errorPath = window.config?.basePath?.resolve('/src/pages/404.html') || '/src/pages/404.html';
-        }
-        const errorRes = await fetch(errorPath);
-        if (errorRes.ok) {
-          const errorHtml = await errorRes.text();
-          if (errorHtml && errorHtml.trim() !== '') {
-            root.innerHTML = errorHtml;
-            
-            // Atualiza URL para 404 considerando o BASE_PATH
-            let errorPath;
-            if (window.config?.basePath?.base_path) {
-              const basePath = window.config.basePath.base_path;
-              errorPath = basePath === '/' ? '/404' : `${basePath}/404`;
-            } else {
-              errorPath = '/404';
-            }
-            window.history.replaceState({}, '', errorPath);
-            
-            this.initializeComponents(root);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('[Core] Erro ao carregar página 404:', error);
-      }
-      
-      // Fallback se não conseguir carregar a página 404
-      root.innerHTML = '<div class="error">Página não encontrada</div>';
+      await this.redirectTo404(root, pageName);
     }
+  }
+
+  /**
+   * Redireciona para a página 404
+   * @param {Element} root - Elemento root
+   * @param {string} pageName - Nome da página solicitada
+   */
+  async redirectTo404(root, pageName) {
+    try {
+      let errorPath;
+      // Se BASE_PATH está vazio e auto está true, usa caminho absoluto
+      if ((!window.config?.basePath?.base_path || window.config.basePath.base_path === '') && 
+          window.config?.basePath?.auto === true) {
+        errorPath = `/src/pages/404.html`;
+      } else if (window.config?.basePath?.auto === false && window.config?.basePath?.base_path) {
+        // Se auto está false e há BASE_PATH configurado
+        errorPath = `${window.config.basePath.base_path}/src/pages/404.html`;
+      } else {
+        // Usa o resolve padrão
+        errorPath = window.config?.basePath?.resolve('/src/pages/404.html') || '/src/pages/404.html';
+      }
+      const errorRes = await fetch(errorPath);
+      if (errorRes.ok) {
+        const errorHtml = await errorRes.text();
+        if (errorHtml && errorHtml.trim() !== '') {
+          root.innerHTML = errorHtml;
+          // Atualiza URL para 404 considerando o BASE_PATH
+          let new404Path;
+          if (window.config?.basePath?.base_path) {
+            const basePath = window.config.basePath.base_path;
+            new404Path = basePath === '/' ? '/404' : `${basePath}/404`;
+          } else {
+            new404Path = '/404';
+          }
+          window.history.replaceState({}, '', new404Path);
+          this.initializeComponents(root);
+          this.clearEverything();
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('[Core] Erro ao carregar página 404:', error);
+    }
+    // Fallback se não conseguir carregar a página 404
+    root.innerHTML = '<div class="error text-center mt-5">Página não encontrada</div>';
   }
 
   /**
    * SPA: Navegação e roteamento
    */
   initRouter() {
+    // Normaliza a URL no reload
+    let currentPath = window.location.pathname;
+    if (currentPath.length > 1 && currentPath.endsWith('/')) {
+      currentPath = currentPath.slice(0, -1);
+      window.history.replaceState({}, '', currentPath);
+    }
     window.addEventListener('popstate', () => this.handleRoute(window.location.pathname));
     
     document.addEventListener('click', e => {
@@ -493,7 +590,7 @@ class Core {
       }
     });
     
-    this.handleRoute(window.location.pathname);
+    this.handleRoute(currentPath);
   }
 
   /**
@@ -501,9 +598,44 @@ class Core {
    * @param {string} path - Caminho da rota
    */
   handleRoute(path) {
+    // Normaliza a URL na navegação dinâmica
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+      window.history.replaceState({}, '', path);
+    }
     if (this._currentPath === path) return;
     this._currentPath = path;
     this.loadPage(path);
+  }
+
+  /**
+   * Limpa todos os dados e cache da aplicação
+   */
+  clearEverything() {
+    try {
+      // Limpa cache de requisições
+      this.requestCache.clear();
+      
+      // Limpa rate limiting
+      this.rateLimitMap.clear();
+      
+      // Limpa componentes carregados
+      this.loadedHtmlComponents.clear();
+      
+      // Limpa estado global (mantém apenas configurações essenciais)
+      const essentialState = {
+        params: this.state.params || [],
+        currentPage: '404'
+      };
+      this.state = essentialState;
+      
+      // Limpa parâmetros
+      this.params = [];
+      
+      window.Debug?.log('[Core] Cache e dados limpos');
+    } catch (error) {
+      console.error('[Core] Erro ao limpar dados:', error);
+    }
   }
 
   /**
@@ -511,6 +643,10 @@ class Core {
    * @param {string} path - Caminho da rota
    */
   navigate(path) {
+    // Normaliza a URL antes de navegar
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
     if (window.location.pathname !== path) {
       window.history.pushState({}, '', path);
       this.handleRoute(path);
@@ -551,14 +687,18 @@ class Core {
    */
   async fetchAPI(url, verb = 'GET', data = {}) {
     console.time('fetchAPI');
+    const requestId = Math.random().toString(36).substr(2, 9);
+    
     try {
       // Validação de entrada
       if (!url || typeof url !== 'string') {
         throw new Error('URL inválida');
       }
 
-      if (!this.isValidUrl(url) && !url.startsWith('/')) {
-        throw new Error('URL não é segura');
+      // Para URLs relativas (que não começam com http/https), permitir
+      if (!url.startsWith('/') && !url.startsWith('http://') && !url.startsWith('https://')) {
+        // Adiciona / no início se não tiver
+        url = `/${url}`;
       }
 
       // Rate limiting
@@ -571,14 +711,15 @@ class Core {
       if (verb === 'GET' && this.requestCache.has(cacheKey)) {
         const cached = this.requestCache.get(cacheKey);
         if (Date.now() - cached.timestamp < 3600 * 1000) { // 1 hora
-          window.Debug?.log('[API] Retornando dados do cache:', url);
+          window.Debug?.log(`[API:${requestId}] Retornando dados do cache:`, url);
           return cached.data;
         }
       }
 
       // Verifica se a URL base está definida
       if (!window.config?.api?.baseUrl) {
-        throw new Error('API base URL não está configurada');
+        console.error(`[API:${requestId}] Configuração da API não encontrada:`, window.config);
+        throw new Error('API base URL não está configurada. Verifique se window.config.api.baseUrl está definido.');
       }
 
       // Verifica se há configuração de proxy
@@ -598,7 +739,14 @@ class Core {
         fullUrl = `${baseUrl}${cleanUrl}`;
       }
 
-      window.Debug?.log(`[API Request] ${verb} ${fullUrl}`, data);
+      window.Debug?.log(`[API:${requestId}] Request ${verb} ${fullUrl}`, data);
+      console.log(`[API:${requestId}] URL completa: ${fullUrl}`);
+      console.log(`[API:${requestId}] Config da API:`, window.config?.api);
+
+      // Configura timeout
+      const timeout = window.config?.api?.timeout || 30000;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       const options = {
         method: verb,
@@ -608,7 +756,8 @@ class Core {
           'X-Requested-With': 'XMLHttpRequest'
         },
         mode: 'cors',
-        credentials: 'include'
+        credentials: 'include',
+        signal: controller.signal
       };
 
       // Adiciona token de autorização se disponível
@@ -629,14 +778,27 @@ class Core {
         options.body = JSON.stringify(sanitizedData);
       }
 
+      console.log(`[API:${requestId}] Fazendo requisição...`);
       const res = await fetch(fullUrl, options);
+      clearTimeout(timeoutId);
+
+      console.log(`[API:${requestId}] Resposta recebida:`, res.status, res.statusText);
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(`API Error: ${res.status} ${res.statusText} - ${JSON.stringify(errorData)}`);
+        let errorData = {};
+        try {
+          errorData = await res.json();
+        } catch (e) {
+          errorData = { message: res.statusText };
+        }
+        
+        const errorMessage = `API Error: ${res.status} ${res.statusText}`;
+        console.error(`[API:${requestId}] ${errorMessage}:`, errorData);
+        throw new Error(`${errorMessage} - ${JSON.stringify(errorData)}`);
       }
 
       const responseData = await res.json();
+      console.log(`[API:${requestId}] Dados recebidos:`, responseData);
 
       if (verb === 'GET') {
         this.requestCache.set(cacheKey, {
@@ -645,31 +807,40 @@ class Core {
         });
       }
 
-      window.Debug?.log(`[API Response] ${verb} ${url}:`, responseData);
+      window.Debug?.log(`[API:${requestId}] Response ${verb} ${url}:`, responseData);
       console.timeEnd('fetchAPI');
       return responseData;
     } catch (error) {
+      clearTimeout(timeoutId);
+      
       this.logSecurityEvent('api_error', {
         url,
         verb,
-        error: error.message
+        error: error.message,
+        requestId
       });
 
       let errorMessage = 'Erro ao acessar o servidor. Por favor, tente novamente mais tarde.';
-      if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+      
+      if (error.name === 'AbortError') {
+        errorMessage = 'Timeout: A requisição demorou muito para responder.';
+      } else if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
         errorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.';
       } else if (error.message.includes('API base URL')) {
         errorMessage = 'Configuração da API está incompleta. Contate o suporte.';
       } else if (error.message.includes('Muitas requisições')) {
         errorMessage = error.message;
+      } else if (error.message.includes('CORS')) {
+        errorMessage = 'Erro de CORS: O servidor não permite requisições deste domínio.';
       }
 
       this.toast(errorMessage, 'error');
-      console.error(`[API Error] ${verb} ${url}:`, {
+      console.error(`[API:${requestId}] Error ${verb} ${url}:`, {
         error: error.message,
         stack: error.stack,
         url: url,
-        verb: verb
+        verb: verb,
+        requestId: requestId
       });
 
       throw error;
@@ -754,7 +925,7 @@ class Core {
     }
 
     // Sanitiza o valor antes de inserir
-    const sanitizedValue = this.sanitizeHtml(value);
+    const sanitizedValue = value;
 
     if (isValue) {
       element.value = sanitizedValue;
@@ -892,20 +1063,27 @@ class Core {
    * Inicializa analytics
    */
   initAnalytics() {
-    if (window.config && window.config.analytics && window.config.analytics.providers && 
-        window.config.analytics.providers.google && window.config.analytics.providers.google.enabled && 
-        window.config.analytics.providers.google.trackingId) {
-      // Google Analytics
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', window.config.analytics.providers.google.trackingId);
-      
-      // Carrega script do GA
-      const script = document.createElement('script');
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${window.config.analytics.providers.google.trackingId}`;
-      script.async = true;
-      document.head.appendChild(script);
+    try {
+      if (window.config && window.config.analytics && window.config.analytics.providers && 
+          window.config.analytics.providers.google && window.config.analytics.providers.google.enabled && 
+          window.config.analytics.providers.google.trackingId) {
+        // Google Analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', window.config.analytics.providers.google.trackingId);
+        
+        // Carrega script do GA
+        const script = document.createElement('script');
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${window.config.analytics.providers.google.trackingId}`;
+        script.async = true;
+        script.onerror = () => {
+          console.warn('[Core] Falha ao carregar Google Analytics');
+        };
+        document.head.appendChild(script);
+      }
+    } catch (error) {
+      console.warn('[Core] Erro ao inicializar analytics:', error);
     }
   }
 
